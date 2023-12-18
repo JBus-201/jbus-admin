@@ -2,7 +2,10 @@
 
 <template>
   <v-app>
-    <v-btn> btn </v-btn>
+    <!-- <v-btn to="Welcome"> Click Me </v-btn> -->
+    <router-view>
+      
+    </router-view>
   </v-app>
 </template>
 
