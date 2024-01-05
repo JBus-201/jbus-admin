@@ -43,6 +43,14 @@ export default {
           this.form
         )
         this.$store.commit('setToken', response.data.token) // replace response.data.token with the actual path to the token in the response
+        localStorage.setItem('token', this.$store.state.token)
+        this.$store.commit('setAdminInfo', response.data.adminDto)
+        localStorage.setItem('adminEmail', response.data.adminDto.user.email);
+        localStorage.setItem('adminName', response.data.adminDto.user.name);
+        // console.log('email', localStorage.getItem('adminEmail'));
+        // console.log('name', localStorage.getItem('adminName'));
+        // localStorage.setItem('adminInfo', this.$store.state.adminInfo)
+        // console.log('Admin Info:', localStorage.getItem('adminInfo'))
         // Handle the response as needed
         console.log('Login response:', response.data)
         this.$router.push('/Home')

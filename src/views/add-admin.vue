@@ -1,6 +1,18 @@
 <template>
   <v-app>
-    <div v-if="emptyAlert" :style="wrongAlert ? 'padding-bottom: 10px' : 'padding-bottom: 50px'">
+    <div v-if="successAlert" style="padding-bottom: 50px">
+      <v-alert
+        v-model="successAlert"
+        border="start"
+        variant="tonal"
+        closable
+        close-label="Close Alert"
+        color="success"
+        title="Admin added successfully"
+      >
+      </v-alert>
+    </div>
+    <div v-if="emptyAlert" style="padding-bottom: 50px">
       <v-alert
         v-model="emptyAlert"
         border="start"
@@ -23,7 +35,9 @@
         color="error"
         title="Duplicate data"
       >
-        The email or phone number you are using might be used by another user.
+        The email or phone number you are using might be used by another user,
+        <br />
+        or the email or phone number you are using is not valid.
       </v-alert>
     </div>
     <v-form>
@@ -89,7 +103,8 @@ export default {
       phoneNumber: '',
       password: '',
       emptyAlert: false,
-      wrongAlert: false
+      wrongAlert: false,
+      successAlert: false
     }
   },
   computed: {
@@ -103,6 +118,13 @@ export default {
     }
   },
   methods: {
+    resetForm() {
+      this.firstName = ''
+      this.lastName = ''
+      this.email = ''
+      this.phoneNumber = ''
+      this.password = ''
+    },
     async addAdmin() {
       if (
         !this.firstName ||
@@ -113,13 +135,15 @@ export default {
       ) {
         console.error('Missing required admin fields')
         this.emptyAlert = true
+        this.wrongAlert = false
+        this.successAlert = false
         return
       } else {
         this.emptyAlert = false
       }
       try {
         const response = await axios.post(
-          'http://vmi1560602.contaboserver.net/api/v1.0/AdminAccount/addAdmin',
+          'http://vmi1560602.contaboserver.net/api/v1.0/Admin/addAdmin',
           this.admin,
           {
             headers: {
@@ -127,11 +151,19 @@ export default {
             }
           }
         )
-        console.log(response.data)
+        if (response.data.status === 200) {
+          console.log(response.data)
+          this.successAlert = true
+          this.wrongAlert = false
+          this.emptyAlert = false
+          this.resetForm()
+        }
       } catch (error) {
         console.error(error)
         if (error.response && error.response.status === 400) {
           this.wrongAlert = true
+          this.emptyAlert = false
+          this.successAlert = false
         }
       }
     }

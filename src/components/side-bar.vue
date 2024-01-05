@@ -3,8 +3,8 @@
     <v-list>
       <v-list-item
         prepend-avatar="https://static.vecteezy.com/system/resources/previews/021/079/672/original/user-account-icon-for-your-design-only-free-png.png"
-        :title="username"
-        :subtitle="email"
+        :title=this.$store.state.adminInfo.name
+        :subtitle=this.$store.state.adminInfo.email
       ></v-list-item>
     </v-list>
     <v-divider></v-divider>
@@ -80,9 +80,3 @@ export default {
   }
 }
 </script>
-
-<style>
-.noline {
-  text-decoration: none;
-}
-</style>
