@@ -1,18 +1,31 @@
 <template>
   <v-app>
-    <div style="padding-bottom: 50px;">
-    <v-alert
-      v-model="alert"
-      border="start"
-      variant="tonal"
-      closable
-      close-label="Close Alert"
-      color="error"
-      title="Please fill all fields"
-    >
-      Some fields might be empty
-    </v-alert>
-  </div>
+    <div v-if="emptyAlert" :style="wrongAlert ? 'padding-bottom: 10px' : 'padding-bottom: 50px'">
+      <v-alert
+        v-model="emptyAlert"
+        border="start"
+        variant="tonal"
+        closable
+        close-label="Close Alert"
+        color="error"
+        title="Please fill all fields"
+      >
+        Some fields might be empty
+      </v-alert>
+    </div>
+    <div v-if="wrongAlert" style="padding-bottom: 50px">
+      <v-alert
+        v-model="wrongAlert"
+        border="start"
+        variant="tonal"
+        closable
+        close-label="Close Alert"
+        color="error"
+        title="Duplicate data"
+      >
+        The email or phone number you are using might be used by another user.
+      </v-alert>
+    </div>
     <v-form>
       <v-container>
         <v-row>
@@ -73,13 +86,14 @@ export default {
       email: '',
       phoneNumber: '',
       password: '',
-      alert: false
+      emptyAlert: false,
+      wrongAlert: false
     }
   },
   computed: {
     passenger() {
       return {
-        name: `${this.firstName} ${this.lastName}`,
+        name: this.firstName + ' ' + this.lastName,
         email: this.email,
         phoneNumber: this.phoneNumber,
         password: this.password
@@ -89,14 +103,17 @@ export default {
   methods: {
     async addPassenger() {
       if (
-        !this.passenger.name ||
+        !this.firstName ||
+        !this.lastName ||
         !this.passenger.phoneNumber ||
         !this.passenger.email ||
         !this.passenger.password
       ) {
         console.error('Missing required passenger fields')
-        this.alert = true
+        this.emptyAlert = true
         return
+      } else {
+        this.emptyAlert = false
       }
       try {
         const response = await axios.post(
@@ -112,8 +129,9 @@ export default {
         console.log(response.data)
       } catch (error) {
         console.error(error)
-        console.log(this.$store.state.token)
-        console.log(this.passenger)
+        if (error.response && error.response.status === 400) {
+          this.wrongAlert = true
+        }
       }
     }
   }

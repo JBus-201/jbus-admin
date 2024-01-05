@@ -1,5 +1,31 @@
 <template>
   <v-app>
+    <div v-if="emptyAlert" :style="wrongAlert ? 'padding-bottom: 10px' : 'padding-bottom: 50px'">
+      <v-alert
+        v-model="emptyAlert"
+        border="start"
+        variant="tonal"
+        closable
+        close-label="Close Alert"
+        color="error"
+        title="Please fill all fields"
+      >
+        Some fields might be empty
+      </v-alert>
+    </div>
+    <div v-if="wrongAlert" style="padding-bottom: 50px">
+      <v-alert
+        v-model="wrongAlert"
+        border="start"
+        variant="tonal"
+        closable
+        close-label="Close Alert"
+        color="error"
+        title="Duplicate data"
+      >
+        The email or phone number you are using might be used by another user.
+      </v-alert>
+    </div>
     <v-form>
       <v-container>
         <v-row>
@@ -43,10 +69,9 @@
         </v-row>
         <v-row>
           <v-col offset="1">
-            <v-btn color="blue" @click="addPassenger" style="align-self: center">
-              Add Admin
-            </v-btn>
-          </v-col></v-row>
+            <v-btn color="blue" @click="addAdmin" style="align-self: center"> Add Admin </v-btn>
+          </v-col></v-row
+        >
       </v-container>
     </v-form>
   </v-app>
@@ -63,7 +88,13 @@ export default {
       email: '',
       phoneNumber: '',
       password: '',
-      admininfo: {
+      emptyAlert: false,
+      wrongAlert: false
+    }
+  },
+  computed: {
+    admin() {
+      return {
         name: this.firstName + ' ' + this.lastName,
         phoneNumber: this.phoneNumber,
         email: this.email,
@@ -71,18 +102,25 @@ export default {
       }
     }
   },
-  computed: {
-    name() {
-      return this.firstName + ' ' + this.lastName
-    }
-  },
   methods: {
-    async addPassenger() {
-      this.passenger.user.name = this.name
+    async addAdmin() {
+      if (
+        !this.firstName ||
+        !this.lastName ||
+        !this.admin.phoneNumber ||
+        !this.admin.email ||
+        !this.admin.password
+      ) {
+        console.error('Missing required admin fields')
+        this.emptyAlert = true
+        return
+      } else {
+        this.emptyAlert = false
+      }
       try {
-        const response = await axios.put(
+        const response = await axios.post(
           'http://vmi1560602.contaboserver.net/api/v1.0/AdminAccount/addAdmin',
-          this.admininfo,
+          this.admin,
           {
             headers: {
               Authorization: `Bearer ${this.$store.state.token}` // replace this.token with your actual token
@@ -92,6 +130,9 @@ export default {
         console.log(response.data)
       } catch (error) {
         console.error(error)
+        if (error.response && error.response.status === 400) {
+          this.wrongAlert = true
+        }
       }
     }
   }
