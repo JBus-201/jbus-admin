@@ -22,7 +22,7 @@
         to="add-passenger"
       ></v-list-item>
       <v-list-item
-        prepend-icon="mdi-account-plus-outline"
+        prepend-icon="mdi-steering"
         title="Add Driver"
         value="Add Driver"
         to="add-driver"

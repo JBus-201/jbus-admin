@@ -1,15 +1,51 @@
 <template>
   <v-app>
+    <div v-if="successAlert" style="padding-bottom: 50px">
+      <v-alert
+        v-model="successAlert"
+        border="start"
+        variant="tonal"
+        closable
+        close-label="Close Alert"
+        color="success"
+        title="Driver added successfully"
+      >
+      </v-alert>
+    </div>
+    <div v-if="emptyAlert" style="padding-bottom: 50px">
+      <v-alert
+        v-model="emptyAlert"
+        border="start"
+        variant="tonal"
+        closable
+        close-label="Close Alert"
+        color="error"
+        title="Please fill all fields"
+      >
+        Some fields might be empty
+      </v-alert>
+    </div>
+    <div v-if="wrongAlert" style="padding-bottom: 50px">
+      <v-alert
+        v-model="wrongAlert"
+        border="start"
+        variant="tonal"
+        closable
+        close-label="Close Alert"
+        color="error"
+        title="Duplicate data or invalid data"
+      >
+        The email or phone number you are using might be used by another user,
+        <br />
+        or the email or phone number you are using is not valid.
+      </v-alert>
+    </div>
     <v-form>
       <v-container>
         <v-row>
           <v-col cols="10" md="5" align-self="center" offset="1">
-            <v-text-field
-              v-model="firstName"
-              label="First Name"
-              required
-              hide-details
-            ></v-text-field>
+            <v-text-field v-model="firstName" label="First Name" required hide-details>
+            </v-text-field>
           </v-col>
 
           <v-col cols="12" md="5">
@@ -23,22 +59,20 @@
         </v-row>
         <v-row>
           <v-col cols="12" md="10" offset="1">
-            <v-text-field
-              v-model="phoneNumber"
-              label="Phone Number"
-              hide-details
-              required
-            ></v-text-field>
+            <v-text-field v-model="phoneNumber" label="Phone Number" hide-details required>
+            </v-text-field>
           </v-col>
         </v-row>
         <v-row>
-          <v-col cols="12" md="8" offset="1">
-            <v-radio-group label="Sex" inline v-model="sex">
-              <v-radio label="Male" value="male"></v-radio>
-              <v-radio label="Female" value="female"></v-radio>
-            </v-radio-group>
+          <v-col cols="12" md="10" offset="1">
+            <v-text-field v-model="password" label="Password" type="password" required>
+            </v-text-field
+          ></v-col>
+        </v-row>
+        <v-row>
+          <v-col offset="1">
+            <v-btn color="blue" @click="addDriver" style="align-self: center">Add Driver</v-btn>
           </v-col>
-          <v-btn color="blue" style="align-self: center;" >Add Driver</v-btn>
         </v-row>
       </v-container>
     </v-form>
@@ -46,20 +80,80 @@
 </template>
 
 <script>
+import axios from 'axios'
 export default {
-  name: 'addPassenger',
+  name: 'addDriver',
   data() {
     return {
       firstName: '',
       lastName: '',
       email: '',
       phoneNumber: '',
-      sex: '',
-      driver:{
+      password: '',
+      emptyAlert: false,
+      wrongAlert: false,
+      successAlert: false
+    }
+  },
+  computed: {
+    driver() {
+      return {
         name: this.firstName + ' ' + this.lastName,
         email: this.email,
         phoneNumber: this.phoneNumber,
-        sex:this.sex
+        password: this.password
+      }
+    }
+  },
+  methods: {
+    resetForm() {
+      this.firstName = ''
+      this.lastName = ''
+      this.email = ''
+      this.phoneNumber = ''
+      this.password = ''
+    },
+    async addDriver() {
+      if (
+        !this.firstName ||
+        !this.lastName ||
+        !this.driver.phoneNumber ||
+        !this.driver.email ||
+        !this.driver.password
+      ) {
+        console.error('Missing required Driver fields')
+        this.emptyAlert = true
+        this.wrongAlert = false
+        this.successAlert = false
+        return
+      } else {
+        this.emptyAlert = false
+      }
+      try {
+        const response = await axios.post(
+          'http://vmi1560602.contaboserver.net/api/v1.0/Driver/addDriver',
+          this.driver,
+          {
+            headers: {
+              Authorization: `Bearer ${this.$store.state.token}`,
+              'Content-Type': 'application/json'
+            }
+          }
+        )
+        if (response.status === 200 || response.status === 204) {
+          console.log(response.data)
+          this.successAlert = true
+          this.wrongAlert = false
+          this.emptyAlert = false
+          this.resetForm()
+        }
+      } catch (error) {
+        console.error(error)
+        if (error.response && error.response.status === 400) {
+          this.wrongAlert = true
+          this.emptyAlert = false
+          this.successAlert = false
+        }
       }
     }
   }

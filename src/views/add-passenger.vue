@@ -33,7 +33,7 @@
         closable
         close-label="Close Alert"
         color="error"
-        title="Duplicate data"
+        title="Duplicate data or invalid data"
       >
         The email or phone number you are using might be used by another user,
         <br />
@@ -150,8 +150,8 @@ export default {
             }
           }
         )
-        if (response.data.status === 200) {
-          console.log(response.data)
+        if (response.status === 200 || response.status === 204) {
+          console.log(response.status)
           this.successAlert = true
           this.wrongAlert = false
           this.emptyAlert = false

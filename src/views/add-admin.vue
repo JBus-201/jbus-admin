@@ -33,7 +33,7 @@
         closable
         close-label="Close Alert"
         color="error"
-        title="Duplicate data"
+        title="Duplicate data or invalid data"
       >
         The email or phone number you are using might be used by another user,
         <br />
@@ -84,8 +84,8 @@
         <v-row>
           <v-col offset="1">
             <v-btn color="blue" @click="addAdmin" style="align-self: center"> Add Admin </v-btn>
-          </v-col></v-row
-        >
+          </v-col>
+        </v-row>
       </v-container>
     </v-form>
   </v-app>
@@ -94,7 +94,7 @@
 <script>
 import axios from 'axios'
 export default {
-  name: 'addPassenger',
+  name: 'addAdmin',
   data() {
     return {
       firstName: '',
@@ -147,11 +147,12 @@ export default {
           this.admin,
           {
             headers: {
-              Authorization: `Bearer ${this.$store.state.token}` // replace this.token with your actual token
+              Authorization: `Bearer ${this.$store.state.token}`,
+              'Content-Type': 'application/json'
             }
           }
         )
-        if (response.data.status === 200) {
+        if (response.status === 200 || response.status === 204) {
           console.log(response.data)
           this.successAlert = true
           this.wrongAlert = false
