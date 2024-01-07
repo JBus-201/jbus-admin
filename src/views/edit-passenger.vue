@@ -61,7 +61,7 @@
           </v-col>
         </v-row>
         <v-col offset="1">
-          <v-btn color="blue" @click="editPassenger" style="align-self: center">Save Edits </v-btn>
+          <v-btn type="submit" color="blue" @click="editPassenger" style="align-self: center">Save Edits </v-btn>
         </v-col>
       </v-container>
     </v-form>

@@ -83,7 +83,7 @@
         </v-row>
         <v-row>
           <v-col offset="1">
-            <v-btn color="blue" @click="addAdmin" style="align-self: center"> Add Admin </v-btn>
+            <v-btn type="submit" color="blue" @click="addAdmin" style="align-self: center"> Add Admin </v-btn>
           </v-col>
         </v-row>
       </v-container>
@@ -136,20 +136,6 @@ export default {
     }
   },
   created() {
-    axios
-      .get('http://vmi1560602.contaboserver.net/api/v1.0/Admin/getAdmins', {
-        headers: {
-          Authorization: `Bearer ${this.$store.state.token}`
-        }
-      })
-      .then((response) => {
-        this.admins = response.data
-      })
-      .catch((error) => {
-        console.error(error)
-      })
-  },
-  updated() {
     axios
       .get('http://vmi1560602.contaboserver.net/api/v1.0/Admin/getAdmins', {
         headers: {
@@ -222,6 +208,18 @@ export default {
           this.wrongAlert = false
           this.emptyAlert = false
           this.resetForm()
+          axios
+            .get('http://vmi1560602.contaboserver.net/api/v1.0/Admin/getAdmins', {
+              headers: {
+                Authorization: `Bearer ${this.$store.state.token}`
+              }
+            })
+            .then((response) => {
+              this.admins = response.data
+            })
+            .catch((error) => {
+              console.error(error)
+            })
         }
       } catch (error) {
         console.error(error)

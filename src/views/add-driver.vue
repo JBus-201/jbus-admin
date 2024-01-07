@@ -71,11 +71,38 @@
         </v-row>
         <v-row>
           <v-col offset="1">
-            <v-btn color="blue" @click="addDriver" style="align-self: center">Add Driver</v-btn>
+            <v-btn type="submit" color="blue" @click="addDriver" style="align-self: center">Add Driver</v-btn>
           </v-col>
         </v-row>
       </v-container>
     </v-form>
+    <v-container>
+      <v-table
+        fixed-header
+        hover
+        height="300px"
+        style="height: 350px; border: 1px solid rgb(217, 217, 217)"
+      >
+        <thead>
+          <tr>
+            <th class="text-left">Name</th>
+            <th class="text-left">Email</th>
+            <th class="text-left">Phone Number</th>
+            <th class="text-center">Edit This user</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="driver in drivers" :key="driver.id">
+            <td>{{ driver.user.name }}</td>
+            <td>{{ driver.user.email }}</td>
+            <td>{{ driver.user.phoneNumber }}</td>
+            <td class="text-center">
+              <v-btn @click="editDriver(driver.id)" icon="mdi-pencil"></v-btn>
+            </td>
+          </tr>
+        </tbody>
+      </v-table>
+    </v-container>
   </v-app>
 </template>
 
@@ -92,8 +119,23 @@ export default {
       password: '',
       emptyAlert: false,
       wrongAlert: false,
-      successAlert: false
+      successAlert: false,
+      drivers: []
     }
+  },
+  created() {
+    axios
+      .get('http://vmi1560602.contaboserver.net/api/v1.0/Driver', {
+        headers: {
+          Authorization: `Bearer ${this.$store.state.token}`
+        }
+      })
+      .then((response) => {
+        this.drivers = response.data
+      })
+      .catch((error) => {
+        console.error(error)
+      })
   },
   computed: {
     driver() {
@@ -106,6 +148,14 @@ export default {
     }
   },
   methods: {
+    editDriver(ID) {
+      this.$router.push({
+        name: 'edit Driver',
+        params: {
+          driverID: ID
+        }
+      })
+    },
     resetForm() {
       this.firstName = ''
       this.lastName = ''
@@ -146,6 +196,18 @@ export default {
           this.wrongAlert = false
           this.emptyAlert = false
           this.resetForm()
+          axios
+            .get('http://vmi1560602.contaboserver.net/api/v1.0/Driver', {
+              headers: {
+                Authorization: `Bearer ${this.$store.state.token}`
+              }
+            })
+            .then((response) => {
+              this.drivers = response.data
+            })
+            .catch((error) => {
+              console.error(error)
+            })
         }
       } catch (error) {
         console.error(error)

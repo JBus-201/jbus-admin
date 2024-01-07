@@ -81,9 +81,13 @@
             ></v-text-field
           ></v-col>
         </v-row>
-        <v-col offset="1">
-          <v-btn color="blue" @click="addPassenger" style="align-self: center">Add Passenger</v-btn>
-        </v-col>
+        <v-row>
+          <v-col offset="1">
+            <v-btn type="submit" color="blue" @click="addPassenger" style="align-self: center">
+              Add Passenger
+            </v-btn>
+          </v-col>
+        </v-row>
       </v-container>
     </v-form>
     <v-container>
@@ -134,20 +138,6 @@ export default {
     }
   },
   created() {
-    axios
-      .get('http://vmi1560602.contaboserver.net/api/v1.0/Passenger/getpassengers', {
-        headers: {
-          Authorization: `Bearer ${this.$store.state.token}`
-        }
-      })
-      .then((response) => {
-        this.passengers = response.data
-      })
-      .catch((error) => {
-        console.error(error)
-      })
-  },
-  updated() {
     axios
       .get('http://vmi1560602.contaboserver.net/api/v1.0/Passenger/getpassengers', {
         headers: {
@@ -220,6 +210,18 @@ export default {
           this.wrongAlert = false
           this.emptyAlert = false
           this.resetForm()
+          axios
+            .get('http://vmi1560602.contaboserver.net/api/v1.0/Passenger/getpassengers', {
+              headers: {
+                Authorization: `Bearer ${this.$store.state.token}`
+              }
+            })
+            .then((response) => {
+              this.passengers = response.data
+            })
+            .catch((error) => {
+              console.error(error)
+            })
         }
       } catch (error) {
         console.error(error)
