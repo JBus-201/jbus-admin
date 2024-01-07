@@ -7,7 +7,7 @@ const router = createRouter({
     { name: 'login', path: '/', component: () => import('../views/log-in.vue') },
     {
       name: 'Home',
-      path: '/Home',
+      path: '/home',
       component: () => import('../views/track-buses.vue'),
       beforeEnter: (to, from, next) => {
         const token = localStorage.getItem('token')
@@ -32,6 +32,19 @@ const router = createRouter({
       }
     },
     {
+      name: 'edit Passenger',
+      path: '/edit-passenger/:passengerID',
+      component: () => import('../views/edit-passenger.vue'),
+      beforeEnter: (to, from, next) => {
+        const token = localStorage.getItem('token')
+        if (!token) {
+          next('/') // redirect to login if there's no token
+        } else {
+          next() // proceed to /add-passenger
+        }
+      }
+    },
+    {
       name: 'Add Driver',
       path: '/add-driver',
       component: () => import('../views/add-driver.vue'),
@@ -45,9 +58,35 @@ const router = createRouter({
       }
     },
     {
+      name: 'edit Driver',
+      path: '/edit-driver/:driverID',
+      component: () => import('../views/edit-driver.vue'),
+      beforeEnter: (to, from, next) => {
+        const token = localStorage.getItem('token')
+        if (!token) {
+          next('/') // redirect to login if there's no token
+        } else {
+          next() // proceed to /add-passenger
+        }
+      }
+    },
+    {
       name: 'Add Admin',
       path: '/add-admin',
       component: () => import('../views/add-admin.vue'),
+      beforeEnter: (to, from, next) => {
+        const token = localStorage.getItem('token')
+        if (!token) {
+          next('/') // redirect to login if there's no token
+        } else {
+          next() // proceed to /add-passenger
+        }
+      }
+    },
+    {
+      name: 'edit Admin',
+      path: '/edit-admin/:adminID',
+      component: () => import('../views/edit-admin.vue'),
       beforeEnter: (to, from, next) => {
         const token = localStorage.getItem('token')
         if (!token) {

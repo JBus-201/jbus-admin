@@ -86,6 +86,33 @@
         </v-col>
       </v-container>
     </v-form>
+    <v-container>
+      <v-table
+        fixed-header
+        hover
+        height="300px"
+        style="height: 350px; border: 1px solid rgb(217, 217, 217)"
+      >
+        <thead>
+          <tr>
+            <th class="text-left">Name</th>
+            <th class="text-left">Email</th>
+            <th class="text-left">Phone Number</th>
+            <th class="text-center">Edit This user</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="passenger in passengers" :key="passenger.id">
+            <td>{{ passenger.user.name }}</td>
+            <td>{{ passenger.user.email }}</td>
+            <td>{{ passenger.user.phoneNumber }}</td>
+            <td class="text-center">
+              <v-btn @click="editPassenger(passenger.id)" icon="mdi-pencil"></v-btn>
+            </td>
+          </tr>
+        </tbody>
+      </v-table>
+    </v-container>
   </v-app>
 </template>
 
@@ -102,8 +129,37 @@ export default {
       password: '',
       emptyAlert: false,
       wrongAlert: false,
-      successAlert: false
+      successAlert: false,
+      passengers: []
     }
+  },
+  created() {
+    axios
+      .get('http://vmi1560602.contaboserver.net/api/v1.0/Passenger/getpassengers', {
+        headers: {
+          Authorization: `Bearer ${this.$store.state.token}`
+        }
+      })
+      .then((response) => {
+        this.passengers = response.data
+      })
+      .catch((error) => {
+        console.error(error)
+      })
+  },
+  updated() {
+    axios
+      .get('http://vmi1560602.contaboserver.net/api/v1.0/Passenger/getpassengers', {
+        headers: {
+          Authorization: `Bearer ${this.$store.state.token}`
+        }
+      })
+      .then((response) => {
+        this.passengers = response.data
+      })
+      .catch((error) => {
+        console.error(error)
+      })
   },
   computed: {
     passenger() {
@@ -116,6 +172,14 @@ export default {
     }
   },
   methods: {
+    editPassenger(ID) {
+      this.$router.push({
+        name: 'edit Passenger',
+        params: {
+          passengerID: ID
+        }
+      })
+    },
     resetForm() {
       this.firstName = ''
       this.lastName = ''
@@ -170,3 +234,8 @@ export default {
 }
 </script>
 
+<style scoped>
+body {
+  overflow: hidden;
+}
+</style>
