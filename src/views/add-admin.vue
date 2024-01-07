@@ -88,6 +88,33 @@
         </v-row>
       </v-container>
     </v-form>
+    <v-container>
+      <v-table
+        fixed-header
+        hover
+        height="300px"
+        style="height: 350px; border: 1px solid rgb(217, 217, 217)"
+      >
+        <thead>
+          <tr>
+            <th class="text-left">Name</th>
+            <th class="text-left">Email</th>
+            <th class="text-left">Phone Number</th>
+            <th class="text-center">Edit This user</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="admin in admins" :key="admin.id">
+            <td>{{ admin.user.name }}</td>
+            <td>{{ admin.user.email }}</td>
+            <td>{{ admin.user.phoneNumber }}</td>
+            <td class="text-center">
+              <v-btn @click="editAdmin(admin.id)" icon="mdi-pencil"></v-btn>
+            </td>
+          </tr>
+        </tbody>
+      </v-table>
+    </v-container>
   </v-app>
 </template>
 
@@ -104,8 +131,37 @@ export default {
       password: '',
       emptyAlert: false,
       wrongAlert: false,
-      successAlert: false
+      successAlert: false,
+      admins: []
     }
+  },
+  created() {
+    axios
+      .get('http://vmi1560602.contaboserver.net/api/v1.0/Admin/getAdmins', {
+        headers: {
+          Authorization: `Bearer ${this.$store.state.token}`
+        }
+      })
+      .then((response) => {
+        this.admins = response.data
+      })
+      .catch((error) => {
+        console.error(error)
+      })
+  },
+  updated() {
+    axios
+      .get('http://vmi1560602.contaboserver.net/api/v1.0/Admin/getAdmins', {
+        headers: {
+          Authorization: `Bearer ${this.$store.state.token}`
+        }
+      })
+      .then((response) => {
+        this.admins = response.data
+      })
+      .catch((error) => {
+        console.error(error)
+      })
   },
   computed: {
     admin() {
@@ -118,6 +174,14 @@ export default {
     }
   },
   methods: {
+    editAdmin(ID) {
+      this.$router.push({
+        name: 'edit Admin',
+        params: {
+          adminID: ID
+        }
+      })
+    },
     resetForm() {
       this.firstName = ''
       this.lastName = ''
