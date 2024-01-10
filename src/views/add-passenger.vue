@@ -40,7 +40,7 @@
         or the email or phone number you are using is not valid.
       </v-alert>
     </div>
-    <v-form>
+    <v-form :style="anyAlert?'padding-top:0px' :'padding-top: 50px'">
       <v-container>
         <v-row>
           <v-col cols="10" md="5" align-self="center" offset="1">
@@ -134,7 +134,7 @@ export default {
       emptyAlert: false,
       wrongAlert: false,
       successAlert: false,
-      passengers: []
+      passengers: [],
     }
   },
   created() {
@@ -159,6 +159,9 @@ export default {
         phoneNumber: this.phoneNumber,
         password: this.password
       }
+    },
+    anyAlert() {
+      return this.emptyAlert || this.wrongAlert || this.successAlert
     }
   },
   methods: {

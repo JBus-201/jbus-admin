@@ -23,7 +23,7 @@ export default {
 <template>
   <v-app>
     <sideBar v-if="showSidebar" />
-    <v-main><router-view style="padding-top: 50px;"> </router-view></v-main>
+    <v-main><router-view > </router-view></v-main>
   </v-app>
 </template>
 
