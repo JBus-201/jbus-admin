@@ -60,7 +60,7 @@ export default {
         )
         if (response.status == 200) {
           this.loginAlert = false
-          localStorage.setItem('token', this.$store.state.token)
+          localStorage.setItem('token', response.data.token)
           localStorage.setItem('adminEmail', response.data.adminDto.user.email)
           localStorage.setItem('adminName', response.data.adminDto.user.name)
           console.log('Login response:', response.data)
