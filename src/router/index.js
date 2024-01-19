@@ -4,7 +4,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    { name: 'login', path: '/', component: () => import('../views/log-in.vue') },
+    { name: 'Login', path: '/', component: () => import('../views/log-in.vue') },
     {
       name: 'Home',
       path: '/home',
@@ -32,7 +32,7 @@ const router = createRouter({
       }
     },
     {
-      name: 'edit Passenger',
+      name: 'Edit Passenger',
       path: '/edit-passenger/:passengerID',
       component: () => import('../views/edit-passenger.vue'),
       beforeEnter: (to, from, next) => {
@@ -58,7 +58,7 @@ const router = createRouter({
       }
     },
     {
-      name: 'edit Driver',
+      name: 'Edit Driver',
       path: '/edit-driver/:driverID',
       component: () => import('../views/edit-driver.vue'),
       beforeEnter: (to, from, next) => {
@@ -84,7 +84,7 @@ const router = createRouter({
       }
     },
     {
-      name: 'edit Admin',
+      name: 'Edit Admin',
       path: '/edit-admin/:adminID',
       component: () => import('../views/edit-admin.vue'),
       beforeEnter: (to, from, next) => {

@@ -71,7 +71,7 @@
         </v-row>
         <v-row>
           <v-col offset="1">
-            <v-btn type="submit" color="blue" @click="addDriver" style="align-self: center">Add Driver</v-btn>
+            <v-btn type="submit" color="blue" @click.prevent="addDriver" style="align-self: center">Add Driver</v-btn>
           </v-col>
         </v-row>
       </v-container>
@@ -153,7 +153,7 @@ export default {
   methods: {
     editDriver(ID) {
       this.$router.push({
-        name: 'edit Driver',
+        name: 'Edit Driver',
         params: {
           driverID: ID
         }
@@ -193,7 +193,7 @@ export default {
             }
           }
         )
-        if (response.status === 200 || response.status === 204) {
+        if (response.status === 200) {
           console.log(response.data)
           this.successAlert = true
           this.wrongAlert = false

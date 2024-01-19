@@ -83,7 +83,7 @@
         </v-row>
         <v-row>
           <v-col offset="1">
-            <v-btn type="submit" color="blue" @click="addAdmin" style="align-self: center"> Add Admin </v-btn>
+            <v-btn type="submit" color="blue" @click.prevent="addAdmin"> Add Admin </v-btn>
           </v-col>
         </v-row>
       </v-container>
@@ -165,7 +165,7 @@ export default {
   methods: {
     editAdmin(ID) {
       this.$router.push({
-        name: 'edit Admin',
+        name: 'Edit Admin',
         params: {
           adminID: ID
         }
@@ -205,7 +205,7 @@ export default {
             }
           }
         )
-        if (response.status === 200 || response.status === 204) {
+        if (response.status === 201) {
           console.log(response.data)
           this.successAlert = true
           this.wrongAlert = false

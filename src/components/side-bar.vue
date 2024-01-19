@@ -3,8 +3,8 @@
     <v-list>
       <v-list-item
         prepend-avatar="https://static.vecteezy.com/system/resources/previews/021/079/672/original/user-account-icon-for-your-design-only-free-png.png"
-        :title=this.$store.state.adminInfo.name
-        :subtitle=this.$store.state.adminInfo.email
+        :title="this.$store.state.adminInfo.name"
+        :subtitle="this.$store.state.adminInfo.email"
       ></v-list-item>
     </v-list>
     <v-divider></v-divider>
@@ -13,70 +13,100 @@
         prepend-icon="mdi-map-marker"
         title="Track Buses"
         value="Track Buses"
-        to="Home"
+        :to="{ name: 'Home' }"
       ></v-list-item>
       <v-list-item
         prepend-icon="mdi-account-plus-outline"
         title="Add Passenger"
         value="Add Passenger"
-        to="add-passenger"
+        :to="{ name: 'Add Passenger' }"
       ></v-list-item>
       <v-list-item
         prepend-icon="mdi-steering"
         title="Add Driver"
         value="Add Driver"
-        to="add-driver"
+        :to="{ name: 'Add Driver' }"
       ></v-list-item>
       <v-list-item
         prepend-icon="mdi-crown-circle"
         title="Add Admin"
         value="Add Admin"
-        to="add-Admin"
+        :to="{ name: 'Add Admin' }"
       ></v-list-item>
       <v-list-item
         prepend-icon="mdi-bus"
         title="Add-Edit Bus"
         value="Add-Edit Bus"
-        to="add-edit-bus"
+        :to="{ name: 'Add-Edit Bus' }"
       ></v-list-item>
       <v-list-item
         prepend-icon="mdi-routes"
         title="Add Route"
         value="Add Route"
-        to="add-route"
+        :to="{ name: 'Add Route' }"
       >
       </v-list-item>
       <v-list-item
         prepend-icon="mdi-heart-circle"
         title="Manage Loyalty Points"
         value="Manage Loyalty Points"
-        to="manage-loyalty-points"
+        :to="{ name: 'Manage Loyalty Points' }"
       >
       </v-list-item>
       <v-list-item
         prepend-icon="mdi-bell-cog"
         title="Manage Notifications"
         value="Manage Notifications"
-        to="manage-notifications"
+        :to="{ name: 'Manage Notifications' }"
       ></v-list-item>
       <v-list-item
         prepend-icon="mdi-chart-line"
         title="Generate Report"
         value="Generate Report"
-        to="generate-reports"
+        :to="{ name: 'Generate Report' }"
+      ></v-list-item>
+      <v-divider />
+      <v-list-item
+        prepend-icon="mdi-logout"
+        title="Logout"
+        value="Logout"
+        @click="logout"
+        class="sticky-bottom"
       ></v-list-item>
     </v-list>
   </v-navigation-drawer>
 </template>
 
 <script>
+import axios from 'axios'
 export default {
   name: 'sideBar',
-  data() {
-    return {
-      username: 'Admin',
-      email: 'Admin@gmail.com'
+  methods: {
+    logout() {
+      axios
+        .post('http://vmi1560602.contaboserver.net/api/v1.0/AdminAccount/logout', null, {
+          headers: {
+            Authorization: `Bearer ${this.$store.state.token}`,
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(() => {
+          // console.log('the response:', response)
+          localStorage.removeItem('token')
+          this.$router.push({ name: 'Login' })
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+      // this.$router.push({ name: 'Login' })
     }
   }
 }
 </script>
+
+<style scoped>
+.sticky-bottom {
+  position: fixed;
+  bottom: 0;
+}
+</style>

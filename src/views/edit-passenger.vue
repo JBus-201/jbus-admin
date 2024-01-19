@@ -61,7 +61,7 @@
           </v-col>
         </v-row>
         <v-col offset="1">
-          <v-btn type="submit" color="blue" @click="editPassenger" style="align-self: center">Save Edits </v-btn>
+          <v-btn type="submit" color="blue" @click.prevent="editPassenger"> Save Edits </v-btn>
         </v-col>
       </v-container>
     </v-form>
@@ -115,6 +115,17 @@ export default {
         email: this.email,
         phoneNumber: this.phoneNumber
       }
+    },
+    passengerForm() {
+      return {
+        profileImage: '/',
+        user: {
+          name: this.name,
+          phoneNumber: this.phoneNumber,
+          email: this.email,
+          sex: '1'
+        }
+      }
     }
   },
   methods: {
@@ -127,24 +138,23 @@ export default {
         return
       } else {
         this.emptyAlert = false
-        this.passengerInfo.user.name = this.name
-        this.passengerInfo.user.email = this.email
-        this.passengerInfo.user.phoneNumber = this.phoneNumber
+        // this.passengerInfo.user.name = this.name
+        // this.passengerInfo.user.email = this.email
+        // this.passengerInfo.user.phoneNumber = this.phoneNumber
       }
       try {
-        console.log(this.passengerInfo)
         const response = await axios.put(
           'http://vmi1560602.contaboserver.net/api/v1.0/Passenger/' +
             this.$route.params.passengerID,
-          this.passengerInfo,
+          this.passengerForm,
           {
             headers: {
               Authorization: `Bearer ${this.$store.state.token}`,
               'Content-Type': 'application/json'
             }
           }
-        )
-        if (response.status === 200 || response.status === 204) {
+          )
+        if (response.status === 204) {
           console.log(response.status)
           this.successAlert = true
           this.wrongAlert = false

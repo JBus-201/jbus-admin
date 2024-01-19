@@ -83,7 +83,7 @@
         </v-row>
         <v-row>
           <v-col offset="1">
-            <v-btn type="submit" color="blue" @click="addPassenger" style="align-self: center">
+            <v-btn type="submit" color="blue" @click.prevent="addPassenger" style="align-self: center">
               Add Passenger
             </v-btn>
           </v-col>
@@ -139,7 +139,7 @@ export default {
   },
   created() {
     axios
-      .get('http://vmi1560602.contaboserver.net/api/v1.0/Passenger/getpassengers', {
+      .get('http://vmi1560602.contaboserver.net/api/v1.0/Passenger/getPassengers', {
         headers: {
           Authorization: `Bearer ${this.$store.state.token}`
         }
@@ -167,7 +167,7 @@ export default {
   methods: {
     editPassenger(ID) {
       this.$router.push({
-        name: 'edit Passenger',
+        name: 'Edit Passenger',
         params: {
           passengerID: ID
         }
@@ -207,14 +207,14 @@ export default {
             }
           }
         )
-        if (response.status === 200 || response.status === 204) {
+        if (response.status === 201) {
           console.log(response.status)
           this.successAlert = true
           this.wrongAlert = false
           this.emptyAlert = false
           this.resetForm()
           axios
-            .get('http://vmi1560602.contaboserver.net/api/v1.0/Passenger/getpassengers', {
+            .get('http://vmi1560602.contaboserver.net/api/v1.0/Passenger/getPassengers', {
               headers: {
                 Authorization: `Bearer ${this.$store.state.token}`
               }
