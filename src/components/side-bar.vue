@@ -34,18 +34,18 @@
         :to="{ name: 'Add Admin' }"
       ></v-list-item>
       <v-list-item
-        prepend-icon="mdi-bus"
-        title="Add-Edit Bus"
-        value="Add-Edit Bus"
-        :to="{ name: 'Add-Edit Bus' }"
-      ></v-list-item>
-      <v-list-item
         prepend-icon="mdi-routes"
         title="Add Route"
         value="Add Route"
         :to="{ name: 'Add Route' }"
       >
       </v-list-item>
+      <v-list-item
+        prepend-icon="mdi-bus"
+        title="Add-Edit Bus"
+        value="Add-Edit Bus"
+        :to="{ name: 'Add-Edit Bus' }"
+      ></v-list-item>
       <v-list-item
         prepend-icon="mdi-heart-circle"
         title="Manage Loyalty Points"
