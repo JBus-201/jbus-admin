@@ -109,7 +109,7 @@
             <td>{{ admin.user.email }}</td>
             <td>{{ admin.user.phoneNumber }}</td>
             <td class="text-center">
-              <v-btn @click="editAdmin(admin.id)" icon="mdi-pencil"></v-btn>
+              <v-btn @click="editAdmin(admin.id)" icon="mdi-pencil" style="margin: 6px;"></v-btn>
             </td>
           </tr>
         </tbody>

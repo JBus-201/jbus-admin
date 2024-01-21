@@ -55,7 +55,7 @@ export default {
       try {
         // Inside your login method
         const response = await axios.post(
-          'http://109.123.253.16/api/v1.0/AdminAccount/login',
+          'http://vmi1560602.contaboserver.net/api/v1.0/AdminAccount/login',
           this.form
         )
         if (response.status == 200) {

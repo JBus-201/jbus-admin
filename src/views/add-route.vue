@@ -3,7 +3,28 @@
     <div style="width: 34%; padding: 20px">
       <v-container>
         <v-row>
-          <v-text-field label="Route Name" v-model="routeName" />
+          <!-- <v-text-field label="Route Name" v-model="routeName" :maxlength="40" :counter="40" /> -->
+          <v-text-field
+            label="Start Location"
+            v-model="startingPointName"
+            :maxlength="40"
+            :counter="40"
+          />
+          <v-text-field
+            label="Destination"
+            v-model="endingPointName"
+            :maxlength="40"
+            :counter="40"
+          />
+          <!-- add starting point destination point -->
+        </v-row>
+        <v-row>
+          <v-text-field
+            label="Fee"
+            v-model="fee"
+            :maxlength="40"
+            :counter="40"
+          />
         </v-row>
         <v-row style="justify-content: space-between">
           <v-btn color="blue" @click="addRoute">Add Route</v-btn>
@@ -19,17 +40,19 @@
           >
             <thead>
               <tr>
-                <th class="text-left">Route ID</th>
-                <th class="text-left">Route Name</th>
-                <th class="text-center">Delete Route</th>
+                <th class="text-center">Route ID</th>
+                <th class="text-center">Route Name</th>
+                <th class="text-center">Edit Route</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="route in routes" :key="route.id">
-                <td>{{ route.id }}</td>
-                <td>{{ route.name }}</td>
+                <td class="text-center">{{ route.id }}</td>
+                <td class="text-center">{{ route.name }}</td>
                 <td class="text-center">
-                  <v-btn @click="deleteRouet(route.id)" icon="mdi-delete"></v-btn>
+                  <v-btn @click="returnRoute(route.id)" icon="mdi-swap-horizontal"></v-btn>
+                  <v-btn @click="addRoutePoints(route.id)" icon="mdi-plus"></v-btn>
+                  <v-btn @click="deleteRoute(route.id)" icon="mdi-delete"></v-btn>
                 </td>
               </tr>
             </tbody>
@@ -67,27 +90,25 @@ export default {
       path: [],
       markers: [],
       encodedPolyline: '',
-      routeName: '',
-      going: true,
+      encodedPolylineComing: '',
+      startingPointName: '',
+      endingPointName: '',
+      goingInfo: false,
+      comingInfo: false,
       routes: [],
-      flag: true
+      flag: true,
+      halfRoute: {},
+      fee: '',
+      returning: false
     }
   },
   created() {
-    axios
-      .get('http://vmi1560602.contaboserver.net/api/v1.0/Route/getRoutes', {
-        headers: {
-          Authorization: `Bearer ${this.$store.state.token}`
-        }
-      })
-      .then((response) => {
-        this.routes = response.data
-      })
-      .catch((error) => {
-        console.error(error)
-      })
+    this.fillTable()
   },
   computed: {
+    routeName() {
+      return this.startingPointName + ' - ' + this.endingPointName
+    },
     startingPoint() {
       if (this.markers.length === 0) return { lat: 0, lng: 0 }
       return this.markers[0]
@@ -97,7 +118,6 @@ export default {
       return this.markers[this.markers.length - 1]
     },
     intermediatePoint() {
-      console.log('MARKERS:', this.markers)
       if (this.markers.length < 3) return { lat: 0, lng: 0 }
       return this.markers[this.markers.length - 2]
     },
@@ -142,52 +162,49 @@ export default {
       }
     },
     addRouteForm() {
-      if (this.going === true)
-        return {
-          name: this.routeName,
-          waypointsGoing: this.encodedPolyline,
-          startingPoint: {
-            name: 'starting point test',
-            logo: '',
-            pointName: 'starting point test',
-            latitude: this.startingPoint.lat,
-            longitude: this.startingPoint.lng
-          },
-          endingPoint: {
-            name: 'ending point test',
-            logo: '',
-            pointName: 'ending point test',
-            latitude: this.endingPoint.lat,
-            longitude: this.endingPoint.lng
-          }
+      return {
+        name: this.routeName,
+        waypointsGoing: this.encodedPolyline,
+        waypointsReturning: this.encodedPolylineComing,
+        fee: this.fee,
+        startingPoint: {
+          name: 'starting point test',
+          logo: '/',
+          latitude: this.startingPoint.lat,
+          longitude: this.startingPoint.lng
+        },
+        endingPoint: {
+          name: 'ending point test',
+          logo: '/',
+          latitude: this.endingPoint.lat,
+          longitude: this.endingPoint.lng
         }
-      else
-        return {
-          name: this.routeName,
-          waypointsReturning: this.encodedPolyline,
-          startingPoint: {
-            name: 'starting point test',
-            logo: '/',
-            pointName: 'starting point test',
-            latitude: this.startingPoint.lat,
-            longitude: this.startingPoint.lng
-          },
-          endingPoint: {
-            name: 'ending point test',
-            logo: '/',
-            pointName: 'ending point test',
-            latitude: this.endingPoint.lat,
-            longitude: this.endingPoint.lng
-          }
+      }
+    },
+    addRouteFormReturning() {
+      return {
+        name: this.routeName,
+        waypointsReturning: this.encodedPolyline,
+        fee: this.fee,
+        endingPoint: {
+          name: 'ending point test',
+          logo: '/',
+          latitude: this.startingPoint.lat,
+          longitude: this.startingPoint.lng
+        },
+        startingPoint: {
+          name: ' starting point test',
+          logo: '/',
+          latitude: this.endingPoint.lat,
+          longitude: this.endingPoint.lng
         }
+      }
     }
   },
   mounted() {
-    //=============
     this.intervalId = setInterval(() => {
-      // console.log('flag', this.flag, 'markers', this.markers.length)
       if (this.flag === true && this.markers.length > 2) {
-        this.makePolyline() //calls
+        this.makePolyline()
         this.flag = false
       }
     }, 100)
@@ -196,11 +213,44 @@ export default {
     clearInterval(this.intervalId)
   },
   methods: {
+    returnRoute(routeID) {
+      console.log('getting here')
+      this.returning = true
+      axios
+        .get('http://vmi1560602.contaboserver.net/api/v1.0/Route/' + routeID, {
+          headers: {
+            Authorization: `Bearer ${this.$store.state.token}`
+          }
+        })
+        .then((response) => {
+          this.halfRoute = response.data
+          this.routeName = response.data.name
+          this.fee = response.data.fee
+          console.log(this.halfRoute)
+          window.alert('You are adding a returning route to ' + this.routeName)
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    },
+    fillTable() {
+      axios
+        .get('http://vmi1560602.contaboserver.net/api/v1.0/Route/getRoutes', {
+          headers: {
+            Authorization: `Bearer ${this.$store.state.token}`
+          }
+        })
+        .then((response) => {
+          this.routes = response.data
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    },
     logCoordinates(event) {
       const coordinates = { lat: event.latLng.lat(), lng: event.latLng.lng() }
       this.markers.push(coordinates)
       this.flag = true
-      // if (this.markers.length > 2) this.makePolyline()
     },
     popMarker() {
       this.markers.pop()
@@ -211,6 +261,7 @@ export default {
       }
     },
     clearRoute() {
+      // window.alert('Route cleared')
       this.markers = []
       this.encodedPolyline = ''
       this.path = []
@@ -235,33 +286,62 @@ export default {
       this.path = paths.map((coord) => ({ lat: coord[0], lng: coord[1] }))
     },
     async addRoute() {
+      console.log(this.addRouteForm)
       if (this.encodedPolyline === '') {
         console.error('Missing required route fields')
         window.alert('You need to provide at least 3 points on the map to create a route')
         return
       }
-      try {
-        console.log('form', this.addRouteForm)
-        console.log('token', this.$store.state.token)
-        const response = await axios.post(
-          'http://vmi1560602.contaboserver.net/api/v1.0/Route/addRoute',
-          this.addRouteForm,
-          {
-            headers: {
-              Authorization: `Bearer ${this.$store.state.token}`,
-              'Content-Type': 'application/json'
+      if (this.returning) {
+        console.log('getting to line 268')
+        console.log(this.addRouteFormReturning)
+        this.returning = false
+        try {
+          const response = await axios.put(
+            'http://vmi1560602.contaboserver.net/api/v1.0/Route/' + this.halfRoute.id,
+            this.addRouteFormReturning,
+            {
+              headers: {
+                Authorization: `Bearer ${this.$store.state.token}`,
+                'Content-Type': 'application/json'
+              }
             }
+          )
+          console.log(response.status)
+          this.fillTable()
+          this.clearRoute()
+          this.routeName = ''
+        } catch (error) {
+          console.error(error)
+          if (error.response && error.response.status === 400) {
+            this.wrongAlert = true
+            this.emptyAlert = false
+            this.successAlert = false
           }
-        )
-        console.log(response.status)
-      } catch (error) {
-        console.error(error)
-        if (error.response && error.response.status === 400) {
-          this.wrongAlert = true
-          this.emptyAlert = false
-          this.successAlert = false
         }
-      }
+      } else
+        try {
+          const response = await axios.post(
+            'http://vmi1560602.contaboserver.net/api/v1.0/Route/addRoute',
+            this.addRouteForm,
+            {
+              headers: {
+                Authorization: `Bearer ${this.$store.state.token}`,
+                'Content-Type': 'application/json'
+              }
+            }
+          )
+          console.log(response.status)
+          this.fillTable()
+          this.clearRoute()
+        } catch (error) {
+          console.error(error)
+          if (error.response && error.response.status === 400) {
+            this.wrongAlert = true
+            this.emptyAlert = false
+            this.successAlert = false
+          }
+        }
     }
   }
 }

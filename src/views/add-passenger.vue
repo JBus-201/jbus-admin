@@ -111,7 +111,7 @@
             <td>{{ passenger.user.email }}</td>
             <td>{{ passenger.user.phoneNumber }}</td>
             <td class="text-center">
-              <v-btn @click="editPassenger(passenger.id)" icon="mdi-pencil"></v-btn>
+              <v-btn @click="editPassenger(passenger.id)" icon="mdi-pencil" style="margin: 6px;"></v-btn>
             </td>
           </tr>
         </tbody>

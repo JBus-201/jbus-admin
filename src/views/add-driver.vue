@@ -97,7 +97,7 @@
             <td>{{ driver.user.email }}</td>
             <td>{{ driver.user.phoneNumber }}</td>
             <td class="text-center">
-              <v-btn @click="editDriver(driver.id)" icon="mdi-pencil"></v-btn>
+              <v-btn @click="editDriver(driver.id)" icon="mdi-pencil" style="margin: 6px;"></v-btn>
             </td>
           </tr>
         </tbody>
