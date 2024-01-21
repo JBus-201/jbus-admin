@@ -1,31 +1,42 @@
 <template>
   <div style="display: flex; width: 100%; height: 100%">
-    <v-form style="width: 34%; padding: 20px">
+    <div style="width: 34%; padding: 20px">
       <v-container>
         <v-row>
           <v-text-field label="Route Name" v-model="routeName" />
-          <v-checkbox label="Going" v-model="going" />
         </v-row>
-        <v-row><v-label>Starting Point Coordinates</v-label></v-row>
-        <v-row>
-          <v-text-field label="Latitude" v-model="startingPoint.lat" />
-          <v-text-field label="Longitude" v-model="startingPoint.lng" />
+        <v-row style="justify-content: space-between">
+          <v-btn color="blue" @click="addRoute">Add Route</v-btn>
+          <v-btn color="blue" @click="popMarker">Remove Last Marker</v-btn>
+          <v-btn color="red" @click="clearRoute">Clear Route</v-btn>
         </v-row>
-
-        <v-row><v-label>Intermediate Point Coordinates</v-label></v-row>
-        <v-row>
-          <v-text-field label="Latitude" v-model="intermediatePoint.lat" />
-          <v-text-field label="Longitude" v-model="intermediatePoint.lng" />
-        </v-row>
-
-        <v-row><v-label>Destination Coordinates</v-label></v-row>
-        <v-row>
-          <v-text-field label="Latitude" v-model="endingPoint.lat" />
-          <v-text-field label="Longitude" v-model="endingPoint.lng" />
+        <v-row style="padding-top: 20px">
+          <v-table
+            fixed-header
+            hover
+            height="600px"
+            style="height: 100%; width: 100%; border: 1px solid rgb(217, 217, 217)"
+          >
+            <thead>
+              <tr>
+                <th class="text-left">Route ID</th>
+                <th class="text-left">Route Name</th>
+                <th class="text-center">Delete Route</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="route in routes" :key="route.id">
+                <td>{{ route.id }}</td>
+                <td>{{ route.name }}</td>
+                <td class="text-center">
+                  <v-btn @click="deleteRouet(route.id)" icon="mdi-delete"></v-btn>
+                </td>
+              </tr>
+            </tbody>
+          </v-table>
         </v-row>
       </v-container>
-      <v-btn color="blue" @click="addRoute">Add Route</v-btn>
-    </v-form>
+    </div>
     <GMapMap
       :center="center"
       :zoom="11"
@@ -57,8 +68,24 @@ export default {
       markers: [],
       encodedPolyline: '',
       routeName: '',
-      going: true
+      going: true,
+      routes: [],
+      flag: true
     }
+  },
+  created() {
+    axios
+      .get('http://vmi1560602.contaboserver.net/api/v1.0/Route/getRoutes', {
+        headers: {
+          Authorization: `Bearer ${this.$store.state.token}`
+        }
+      })
+      .then((response) => {
+        this.routes = response.data
+      })
+      .catch((error) => {
+        console.error(error)
+      })
   },
   computed: {
     startingPoint() {
@@ -156,12 +183,14 @@ export default {
     }
   },
   mounted() {
+    //=============
     this.intervalId = setInterval(() => {
-      if (this.markers.length > 2) {
-        this.makePolyline()
+      // console.log('flag', this.flag, 'markers', this.markers.length)
+      if (this.flag === true && this.markers.length > 2) {
+        this.makePolyline() //calls
+        this.flag = false
       }
     }, 100)
-
   },
   beforeUnmount() {
     clearInterval(this.intervalId)
@@ -170,14 +199,29 @@ export default {
     logCoordinates(event) {
       const coordinates = { lat: event.latLng.lat(), lng: event.latLng.lng() }
       this.markers.push(coordinates)
-      if (this.markers.length > 2) this.makePolyline()
+      this.flag = true
+      // if (this.markers.length > 2) this.makePolyline()
     },
-    makePolyline() {
+    popMarker() {
+      this.markers.pop()
+      this.flag = true
+      if (this.markers.length <= 2) {
+        this.encodedPolyline = ''
+        this.path = []
+      }
+    },
+    clearRoute() {
+      this.markers = []
+      this.encodedPolyline = ''
+      this.path = []
+    },
+    async makePolyline() {
       console.log(
         'api',
-        axios
+        await axios
           .post(
-            'https://routes.googleapis.com/directions/v2:computeRoutes?fields=routes.duration,routes.distanceMeters,routes.polyline.encodedPolyline&key='+"AIzaSyDxNE0VlDOWFQyk5aYx3R8QG2etHa7l59A",
+            'https://routes.googleapis.com/directions/v2:computeRoutes?fields=routes.duration,routes.distanceMeters,routes.polyline.encodedPolyline&key=' +
+              'AIzaSyDxNE0VlDOWFQyk5aYx3R8QG2etHa7l59A',
             this.computeRouteForm
           )
           .then((response) => {
@@ -191,6 +235,11 @@ export default {
       this.path = paths.map((coord) => ({ lat: coord[0], lng: coord[1] }))
     },
     async addRoute() {
+      if (this.encodedPolyline === '') {
+        console.error('Missing required route fields')
+        window.alert('You need to provide at least 3 points on the map to create a route')
+        return
+      }
       try {
         console.log('form', this.addRouteForm)
         console.log('token', this.$store.state.token)
