@@ -7,19 +7,18 @@
           <v-text-field
             label="Start Location"
             v-model="startingPointName"
-            :maxlength="40"
-            :counter="40"
+            :maxlength="20"
+            :counter="20"
           />
           <v-text-field
             label="Destination"
             v-model="endingPointName"
-            :maxlength="40"
-            :counter="40"
+            :maxlength="20"
+            :counter="20"
           />
-          <!-- add starting point destination point -->
         </v-row>
-        <v-row>
-          <v-text-field label="Fee" v-model="fee" :maxlength="40" :counter="40" />
+        <v-row style="margin-bottom: 20px">
+          <v-text-field label="Fee" v-model="fee" type="number" hide-details="" />
         </v-row>
         <v-row style="justify-content: space-between">
           <v-btn color="blue" @click="addRoute">Add Route</v-btn>
@@ -341,3 +340,11 @@ export default {
   }
 }
 </script>
+
+<style>
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+</style>
