@@ -4,8 +4,7 @@ import sideBar from './components/side-bar.vue'
 export default {
   name: 'main-app',
   data() {
-    return {
-    }
+    return {}
   },
   components: {
     sideBar
@@ -23,7 +22,7 @@ export default {
 <template>
   <v-app>
     <sideBar v-if="showSidebar" />
-    <v-main><router-view > </router-view></v-main>
+    <v-main><router-view> </router-view></v-main>
   </v-app>
 </template>
 

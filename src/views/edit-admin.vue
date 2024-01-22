@@ -69,8 +69,8 @@
     </v-form>
   </v-app>
 </template>
-    
-    <script>
+
+<script>
 import axios from 'axios'
 export default {
   name: 'editAdmin',
@@ -100,7 +100,7 @@ export default {
     //maybe change created() to mounted()
     if (this.$route.params.adminID) {
       axios
-        .get('http://vmi1560602.contaboserver.net/api/v1.0/Admin/' + this.$route.params.adminID, {
+        .get(import.meta.env.VITE_API_BASE_URL + '/Admin/' + this.$route.params.adminID, {
           headers: {
             Authorization: `Bearer ${this.$store.state.token}`
           }
@@ -134,7 +134,7 @@ export default {
       try {
         console.log(this.adminForm)
         const response = await axios.put(
-          'http://vmi1560602.contaboserver.net/api/v1.0/Admin/' + this.$route.params.adminID,
+          import.meta.env.VITE_API_BASE_URL + '/Admin/' + this.$route.params.adminID,
           this.adminForm,
           {
             headers: {

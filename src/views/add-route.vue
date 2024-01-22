@@ -19,12 +19,7 @@
           <!-- add starting point destination point -->
         </v-row>
         <v-row>
-          <v-text-field
-            label="Fee"
-            v-model="fee"
-            :maxlength="40"
-            :counter="40"
-          />
+          <v-text-field label="Fee" v-model="fee" :maxlength="40" :counter="40" />
         </v-row>
         <v-row style="justify-content: space-between">
           <v-btn color="blue" @click="addRoute">Add Route</v-btn>
@@ -79,7 +74,7 @@
     </GMapMap>
   </div>
 </template>
-    
+
 <script>
 import axios from 'axios'
 import { decode } from '@googlemaps/polyline-codec'
@@ -217,7 +212,7 @@ export default {
       console.log('getting here')
       this.returning = true
       axios
-        .get('http://vmi1560602.contaboserver.net/api/v1.0/Route/' + routeID, {
+        .get(import.meta.env.VITE_API_BASE_URL + '/Route/' + routeID, {
           headers: {
             Authorization: `Bearer ${this.$store.state.token}`
           }
@@ -235,7 +230,7 @@ export default {
     },
     fillTable() {
       axios
-        .get('http://vmi1560602.contaboserver.net/api/v1.0/Route/getRoutes', {
+        .get(import.meta.env.VITE_API_BASE_URL + '/Route/getRoutes', {
           headers: {
             Authorization: `Bearer ${this.$store.state.token}`
           }
@@ -272,7 +267,7 @@ export default {
         await axios
           .post(
             'https://routes.googleapis.com/directions/v2:computeRoutes?fields=routes.duration,routes.distanceMeters,routes.polyline.encodedPolyline&key=' +
-              'AIzaSyDxNE0VlDOWFQyk5aYx3R8QG2etHa7l59A',
+              import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
             this.computeRouteForm
           )
           .then((response) => {
@@ -298,7 +293,7 @@ export default {
         this.returning = false
         try {
           const response = await axios.put(
-            'http://vmi1560602.contaboserver.net/api/v1.0/Route/' + this.halfRoute.id,
+            import.meta.env.VITE_API_BASE_URL + '/Route/' + this.halfRoute.id,
             this.addRouteFormReturning,
             {
               headers: {
@@ -322,7 +317,7 @@ export default {
       } else
         try {
           const response = await axios.post(
-            'http://vmi1560602.contaboserver.net/api/v1.0/Route/addRoute',
+            import.meta.env.VITE_API_BASE_URL + '/Route/addRoute',
             this.addRouteForm,
             {
               headers: {

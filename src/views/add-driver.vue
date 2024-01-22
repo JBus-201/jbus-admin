@@ -40,7 +40,7 @@
         or the email or phone number you are using is not valid.
       </v-alert>
     </div>
-    <v-form :style="anyAlert?'padding-top:0px' :'padding-top: 50px'">
+    <v-form :style="anyAlert ? 'padding-top:0px' : 'padding-top: 50px'">
       <v-container>
         <v-row>
           <v-col cols="10" md="5" align-self="center" offset="1">
@@ -71,7 +71,9 @@
         </v-row>
         <v-row>
           <v-col offset="1">
-            <v-btn type="submit" color="blue" @click.prevent="addDriver" style="align-self: center">Add Driver</v-btn>
+            <v-btn type="submit" color="blue" @click.prevent="addDriver" style="align-self: center"
+              >Add Driver</v-btn
+            >
           </v-col>
         </v-row>
       </v-container>
@@ -97,7 +99,7 @@
             <td>{{ driver.user.email }}</td>
             <td>{{ driver.user.phoneNumber }}</td>
             <td class="text-center">
-              <v-btn @click="editDriver(driver.id)" icon="mdi-pencil" style="margin: 6px;"></v-btn>
+              <v-btn @click="editDriver(driver.id)" icon="mdi-pencil" style="margin: 6px"></v-btn>
             </td>
           </tr>
         </tbody>
@@ -125,7 +127,7 @@ export default {
   },
   created() {
     axios
-      .get('http://vmi1560602.contaboserver.net/api/v1.0/Driver', {
+      .get(import.meta.env.VITE_API_BASE_URL + '/Driver', {
         headers: {
           Authorization: `Bearer ${this.$store.state.token}`
         }
@@ -184,7 +186,7 @@ export default {
       }
       try {
         const response = await axios.post(
-          'http://vmi1560602.contaboserver.net/api/v1.0/Driver/addDriver',
+          import.meta.env.VITE_API_BASE_URL + '/Driver/addDriver',
           this.driver,
           {
             headers: {
@@ -200,7 +202,7 @@ export default {
           this.emptyAlert = false
           this.resetForm()
           axios
-            .get('http://vmi1560602.contaboserver.net/api/v1.0/Driver', {
+            .get(import.meta.env.VITE_API_BASE_URL + '/Driver', {
               headers: {
                 Authorization: `Bearer ${this.$store.state.token}`
               }
@@ -224,4 +226,3 @@ export default {
   }
 }
 </script>
-

@@ -67,8 +67,8 @@
     </v-form>
   </v-app>
 </template>
-  
-  <script>
+
+<script>
 import axios from 'axios'
 export default {
   name: 'editPassenger',
@@ -87,15 +87,11 @@ export default {
     //maybe change created() to mounted()
     if (this.$route.params.passengerID) {
       axios
-        .get(
-          'http://vmi1560602.contaboserver.net/api/v1.0/Passenger/' +
-            this.$route.params.passengerID,
-          {
-            headers: {
-              Authorization: `Bearer ${this.$store.state.token}`
-            }
+        .get(import.meta.env.VITE_API_BASE_URL + '/Passenger/' + this.$route.params.passengerID, {
+          headers: {
+            Authorization: `Bearer ${this.$store.state.token}`
           }
-        )
+        })
         .then((response) => {
           this.passengerInfo = response.data
           console.log(this.passengerInfo)
@@ -144,8 +140,7 @@ export default {
       }
       try {
         const response = await axios.put(
-          'http://vmi1560602.contaboserver.net/api/v1.0/Passenger/' +
-            this.$route.params.passengerID,
+          import.meta.env.VITE_API_BASE_URL + '/Passenger/' + this.$route.params.passengerID,
           this.passengerForm,
           {
             headers: {
@@ -153,7 +148,7 @@ export default {
               'Content-Type': 'application/json'
             }
           }
-          )
+        )
         if (response.status === 204) {
           console.log(response.status)
           this.successAlert = true

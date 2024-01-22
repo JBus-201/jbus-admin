@@ -84,7 +84,7 @@ export default {
   methods: {
     logout() {
       axios
-        .post('http://vmi1560602.contaboserver.net/api/v1.0/AdminAccount/logout', null, {
+        .post(import.meta.env.VITE_API_BASE_URL + '/AdminAccount/logout', null, {
           headers: {
             Authorization: `Bearer ${this.$store.state.token}`,
             'Content-Type': 'application/json'

@@ -55,7 +55,7 @@ export default {
       try {
         // Inside your login method
         const response = await axios.post(
-          'http://vmi1560602.contaboserver.net/api/v1.0/AdminAccount/login',
+          import.meta.env.VITE_API_BASE_URL + '/AdminAccount/login',
           this.form
         )
         if (response.status == 200) {

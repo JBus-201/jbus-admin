@@ -4,7 +4,7 @@ import App from './App.vue'
 import router from './router'
 import vuetify from './vuetify'
 import store from './store' // Path to your store file
-import VueGoogleMaps from '@fawmi/vue-google-maps';
+import VueGoogleMaps from '@fawmi/vue-google-maps'
 
 const app = createApp(App)
 
@@ -15,7 +15,7 @@ app.use(store) // Use Vuex store
 
 app.use(VueGoogleMaps, {
   load: {
-    key: 'AIzaSyDxNE0VlDOWFQyk5aYx3R8QG2etHa7l59A' // replace with your API key
+    key: import.meta.env.VITE_GOOGLE_MAPS_API_KEY // replace with your API key
   }
 })
 

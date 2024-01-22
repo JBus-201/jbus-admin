@@ -5,7 +5,7 @@ export default createStore({
     token: localStorage.getItem('token') || '',
     adminInfo: {
       name: localStorage.getItem('adminName') || '',
-      email: localStorage.getItem('adminEmail') || '',
+      email: localStorage.getItem('adminEmail') || ''
     }
   },
   mutations: {

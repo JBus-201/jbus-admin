@@ -69,8 +69,8 @@
     </v-form>
   </v-app>
 </template>
-    
-    <script>
+
+<script>
 import axios from 'axios'
 export default {
   name: 'editDriver',
@@ -102,14 +102,14 @@ export default {
     //maybe change created() to mounted()
     if (this.$route.params.driverID) {
       axios
-        .get('http://vmi1560602.contaboserver.net/api/v1.0/Driver/' + this.$route.params.driverID, {
+        .get(import.meta.env.VITE_API_BASE_URL + '/Driver/' + this.$route.params.driverID, {
           headers: {
             Authorization: `Bearer ${this.$store.state.token}`
           }
         })
         .then((response) => {
           this.driverInfo = response.data
-          console.log("driver info from api:", this.driverInfo)
+          console.log('driver info from api:', this.driverInfo)
           this.name = this.driverInfo.user.name
           this.email = this.driverInfo.user.email
           this.phoneNumber = this.driverInfo.user.phoneNumber
@@ -136,7 +136,7 @@ export default {
       try {
         console.log(this.driverForm)
         const response = await axios.put(
-          'http://vmi1560602.contaboserver.net/api/v1.0/Driver/' + this.$route.params.driverID,
+          import.meta.env.VITE_API_BASE_URL + '/Driver/' + this.$route.params.driverID,
           this.driverForm,
           {
             headers: {
