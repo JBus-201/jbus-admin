@@ -293,12 +293,13 @@ export default {
     clearInterval(this.intervalId)
   },
   methods: {
-    displayRoute(routeID) {
+    async displayRoute(routeID) {
       if (this.markers.length !== 0 || this.stops.length !== 0) {
         this.viewPathAlert = true
         return
       }
-      axios
+      var getStops = true
+      await axios
         .get(import.meta.env.VITE_API_BASE_URL + '/Route/' + routeID, {
           headers: {
             Authorization: `Bearer ${this.$store.state.token}`
@@ -309,26 +310,32 @@ export default {
             lat: coord[0],
             lng: coord[1]
           }))
-        })
-        .catch((error) => {
-          console.error(error)
-        })
-
-      axios
-        .get(import.meta.env.VITE_API_BASE_URL + '/PredefinedStops/' + routeID, {
-          headers: {
-            Authorization: `Bearer ${this.$store.state.token}`
+          if (!response.data.predefinedStops) {
+            getStops = false
+            this.viewStops = []
           }
         })
-        .then((response) => {
-          this.viewStops = response.data.points.map((coord) => ({
-            lat: coord.latitude,
-            lng: coord.longitude
-          }))
-        })
         .catch((error) => {
           console.error(error)
         })
+        
+      if (getStops) {
+        await axios
+          .get(import.meta.env.VITE_API_BASE_URL + '/PredefinedStops/' + routeID, {
+            headers: {
+              Authorization: `Bearer ${this.$store.state.token}`
+            }
+          })
+          .then((response) => {
+            this.viewStops = response.data.points.map((coord) => ({
+              lat: coord.latitude,
+              lng: coord.longitude
+            }))
+          })
+          .catch((error) => {
+            console.error(error)
+          })
+      }
     },
     returnRoute(routeID) {
       console.log('getting here')

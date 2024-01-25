@@ -4,6 +4,14 @@
       :center="{ lat: 31.9351052, lng: 35.7755961 }"
       :zoom="10"
       style="width: 100%; height: 100%; position: absolute"
+      :options="{
+        zoomControl: true,
+        mapTypeControl: false,
+        scaleControl: false,
+        streetViewControl: false,
+        rotateControl: false,
+        fullscreenControl: false
+      }"
     />
   </div>
 </template>
