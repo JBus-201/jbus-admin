@@ -213,7 +213,6 @@ export default {
     setDriver(ID, name) {
       this.driverID = ID
       this.driverName = name
-      console.log(this.driverID)
     },
     setRoute(ID, name) {
       this.routeID = ID
@@ -322,7 +321,6 @@ export default {
         }
       } catch (error) {
         console.error(error)
-        console.log('1', this.routeID, this.driverID)
         if (error.response && error.response.status === 400) {
           this.failAlert = true
           this.emptyAlert = false
