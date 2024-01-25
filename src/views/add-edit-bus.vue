@@ -129,7 +129,7 @@
         fixed-header
         hover
         height="300px"
-        style="height: 350px; border: 1px solid rgb(217, 217, 217)"
+        style="height: 250px; border: 1px solid rgb(217, 217, 217)"
       >
         <thead>
           <tr>
