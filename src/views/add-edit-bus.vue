@@ -41,27 +41,79 @@
           </v-col>
         </v-row>
         <v-row>
+          <v-col cols="10" md="5" align-self="center" offset="1">
+            <v-text-field
+              v-model="routeName"
+              label="Route Name"
+              required
+              disabled
+              hide-details
+            ></v-text-field>
+          </v-col>
+
+          <v-col cols="12" md="5">
+            <v-text-field v-model="driverName" label="Driver" required disabled hide-details />
+          </v-col>
+        </v-row>
+        <v-row>
           <v-col cols="12" md="10" offset="1">
-            <v-menu transition="slide-y-transition">
-              <template v-slot:activator="{ props }">
-                <v-btn color="green" v-bind="props"> route </v-btn>
-              </template>
-              <v-list>
-                <v-list-item v-for="route in routes" :key="route.id">
-                  <v-list-item @click="this.routeID = route.id">{{ route.name }}</v-list-item>
-                </v-list-item>
-              </v-list>
-            </v-menu>
-            <v-menu transition="slide-y-transition">
-              <template v-slot:activator="{ props }">
-                <v-btn color="green" v-bind="props"> Driver </v-btn>
-              </template>
-              <v-list>
-                <v-list-item v-for="driver in drivers" :key="driver.id">
-                  <v-list-item @click="this.driverID = driver.id">{{ driver.user.name }}</v-list-item>
-                </v-list-item>
-              </v-list>
-            </v-menu>
+            <div style="display: flex; width: 100%; gap: 10px">
+              <v-table
+                fixed-header
+                hover
+                height="300px"
+                style="height: 250px; flex: 1; border: 1px solid rgb(217, 217, 217)"
+              >
+                <thead>
+                  <tr>
+                    <th class="text-center">
+                      Route Name <span style="font-weight: 100">(optional)</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="route in routes" :key="route.id">
+                    <td
+                      class="text-center"
+                      @click="
+                        this.routeID = route.id;
+                        this.routeName = route.name;
+                      "
+                    >
+                      {{ route.name }}
+                    </td>
+                  </tr>
+                </tbody>
+              </v-table>
+
+              <v-table
+                fixed-header
+                hover
+                height="300px"
+                style="height: 250px; flex: 1; border: 1px solid rgb(217, 217, 217)"
+              >
+                <thead>
+                  <tr>
+                    <th class="text-center">
+                      Driver <span style="font-weight: 100">(optional)</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="driver in drivers" :key="driver.id">
+                    <td
+                      class="text-center"
+                      @click="
+                        this.driverID = driver.id;
+                        this.driverName = driver.user.name;
+                      "
+                    >
+                      {{ driver.user.name }}
+                    </td>
+                  </tr>
+                </tbody>
+              </v-table>
+            </div>
           </v-col>
         </v-row>
         <v-row> </v-row>
@@ -72,6 +124,31 @@
         </v-row>
       </v-container>
     </v-form>
+    <v-container>
+      <v-table
+        fixed-header
+        hover
+        height="300px"
+        style="height: 350px; border: 1px solid rgb(217, 217, 217)"
+      >
+        <thead>
+          <tr>
+            <th class="text-left">Bus Number</th>
+            <th class="text-left">Capacity</th>
+            <th class="text-left">Driver ID</th>
+            <th class="text-left">Route ID</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="bus in buses" :key="bus.id">
+            <td>{{ bus.busNumber }}</td>
+            <td>{{ bus.capacity }}</td>
+            <td>{{ bus.driverId }}</td>
+            <td>{{ bus.routeId }}</td>
+          </tr>
+        </tbody>
+      </v-table>
+    </v-container>
   </v-app>
 </template>
 
@@ -89,16 +166,19 @@ export default {
       routes: [],
       routeID: '',
       drivers: [],
-      driverID: ''
+      driverID: '',
+      buses: [],
+      routeName: '',
+      driverName: ''
     }
   },
   computed: {
     busForm() {
       return {
         busNumber: this.busNumber,
-        capacity: this.capacity,
-        routeId: this.routeID,
-        driverId: this.driverID
+        capacity: parseInt(this.capacity),
+        routeId: parseInt(this.routeID),
+        driverId: parseInt(this.driverID)
       }
     }
   },
@@ -132,6 +212,19 @@ export default {
         .catch((error) => {
           console.error(error)
         })
+
+      axios
+        .get(import.meta.env.VITE_API_BASE_URL + '/Bus/getBuses', {
+          headers: {
+            Authorization: `Bearer ${this.$store.state.token}`
+          }
+        })
+        .then((response) => {
+          this.buses = response.data
+        })
+        .catch((error) => {
+          console.error(error)
+        })
     },
     async addBus() {
       if (!this.busNumber || !this.capacity) {
@@ -159,18 +252,7 @@ export default {
           this.wrongAlert = false
           this.emptyAlert = false
           this.resetForm()
-          axios
-            .get(import.meta.env.VITE_API_BASE_URL + '/Admin/getAdmins', {
-              headers: {
-                Authorization: `Bearer ${this.$store.state.token}`
-              }
-            })
-            .then((response) => {
-              this.admins = response.data
-            })
-            .catch((error) => {
-              console.error(error)
-            })
+          this.fillTable()
         }
       } catch (error) {
         console.error(error)
