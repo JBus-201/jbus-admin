@@ -42,9 +42,9 @@
       </v-list-item>
       <v-list-item
         prepend-icon="mdi-bus"
-        title="Add-Edit Bus"
-        value="Add-Edit Bus"
-        :to="{ name: 'Add-Edit Bus' }"
+        title="Add Bus"
+        value="Add Bus"
+        :to="{ name: 'Add Bus' }"
       ></v-list-item>
       <v-list-item
         prepend-icon="mdi-heart-circle"

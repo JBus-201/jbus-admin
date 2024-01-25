@@ -97,9 +97,9 @@ const router = createRouter({
       }
     },
     {
-      name: 'Add-Edit Bus',
-      path: '/add-edit-bus',
-      component: () => import('../views/add-edit-bus.vue'),
+      name: 'Add Bus',
+      path: '/add-bus',
+      component: () => import('../views/add-bus.vue'),
       beforeEnter: (to, from, next) => {
         const token = localStorage.getItem('token')
         if (!token) {

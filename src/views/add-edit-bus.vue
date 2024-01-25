@@ -1,5 +1,16 @@
 <template>
   <v-app>
+    <div v-if="editAlert" style="padding-bottom: 50px">
+      <v-alert
+        v-model="editAlert"
+        border="start"
+        variant="tonal"
+        closable
+        close-label="Close Alert"
+        color="success"
+        title="Bus edited successfully"
+      ></v-alert>
+    </div>
     <div v-if="successAlert" style="padding-bottom: 50px">
       <v-alert
         v-model="successAlert"
@@ -21,7 +32,20 @@
         color="error"
         title="Some fields might be empty"
       >
-        Please fill Bus Number and Capacity fields
+        Please fill Bus Number, Capacity, Route Name and Driver fields
+      </v-alert>
+    </div>
+    <div v-if="failAlert" style="padding-bottom: 50px">
+      <v-alert
+        v-model="failAlert"
+        border="start"
+        variant="tonal"
+        closable
+        close-label="Close Alert"
+        color="error"
+        title="Bus not added/edited"
+      >
+        There was an issue performing this action
       </v-alert>
     </div>
     <v-form :style="anyAlert ? 'padding-top:0px' : 'padding-top: 50px'">
@@ -66,20 +90,12 @@
               >
                 <thead>
                   <tr>
-                    <th class="text-center">
-                      Route Name <span style="font-weight: 100">(optional)</span>
-                    </th>
+                    <th class="text-center">Route Name</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr v-for="route in routes" :key="route.id">
-                    <td
-                      class="text-center"
-                      @click="
-                        this.routeID = route.id;
-                        this.routeName = route.name;
-                      "
-                    >
+                    <td class="text-center" @click="setRoute(route.id, route.name)">
                       {{ route.name }}
                     </td>
                   </tr>
@@ -94,20 +110,12 @@
               >
                 <thead>
                   <tr>
-                    <th class="text-center">
-                      Driver <span style="font-weight: 100">(optional)</span>
-                    </th>
+                    <th class="text-center">Driver</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr v-for="driver in drivers" :key="driver.id">
-                    <td
-                      class="text-center"
-                      @click="
-                        this.driverID = driver.id;
-                        this.driverName = driver.user.name;
-                      "
-                    >
+                    <td class="text-center" @click="setDriver(driver.id, driver.user.name)">
                       {{ driver.user.name }}
                     </td>
                   </tr>
@@ -116,10 +124,14 @@
             </div>
           </v-col>
         </v-row>
-        <v-row> </v-row>
         <v-row>
           <v-col offset="1">
-            <v-btn type="submit" color="blue" @click.prevent="addBus"> Add Bus </v-btn>
+            <v-btn v-if="editing === false" type="submit" color="blue" @click.prevent="addBus">
+              Add Bus
+            </v-btn>
+            <v-btn v-if="editing === true" type="submit" color="blue" @click.prevent="pushEdits">
+              Edit Bus
+            </v-btn>
           </v-col>
         </v-row>
       </v-container>
@@ -135,16 +147,22 @@
           <tr>
             <th class="text-left">Bus Number</th>
             <th class="text-left">Capacity</th>
-            <th class="text-left">Driver ID</th>
-            <th class="text-left">Route ID</th>
+            <th class="text-left">Driver</th>
+            <th class="text-left">Route Name</th>
+            <th class="text-left">Edit Bus</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="bus in buses" :key="bus.id">
-            <td>{{ bus.busNumber }}</td>
-            <td>{{ bus.capacity }}</td>
-            <td>{{ bus.driverId }}</td>
-            <td>{{ bus.routeId }}</td>
+            <td class="text-left">{{ bus.busNumber }}</td>
+            <td class="text-left">{{ bus.capacity }}</td>
+            <td class="text-left">
+              {{ bus.driver ? bus.driver.user.name : 'No driver assigned' }}
+            </td>
+            <td class="text-left">{{ bus.route.name }}</td>
+            <td class="text-left">
+              <v-btn @click="editBus(bus.id)" icon="mdi-pencil" style="margin: 6px"></v-btn>
+            </td>
           </tr>
         </tbody>
       </v-table>
@@ -160,7 +178,8 @@ export default {
     return {
       successAlert: false,
       emptyAlert: false,
-      anyAlert: false,
+      editAlert: false,
+      failAlert: false,
       busNumber: '',
       capacity: '',
       routes: [],
@@ -169,7 +188,9 @@ export default {
       driverID: '',
       buses: [],
       routeName: '',
-      driverName: ''
+      driverName: '',
+      editing: false,
+      busID: ''
     }
   },
   computed: {
@@ -180,12 +201,32 @@ export default {
         routeId: parseInt(this.routeID),
         driverId: parseInt(this.driverID)
       }
+    },
+    anyAlert() {
+      return this.successAlert || this.emptyAlert || this.failAlert || this.editAlert
     }
   },
   created() {
     this.fillTable()
   },
   methods: {
+    setDriver(ID, name) {
+      this.driverID = ID
+      this.driverName = name
+      console.log(this.driverID)
+    },
+    setRoute(ID, name) {
+      this.routeID = ID
+      this.routeName = name
+    },
+    resetForm() {
+      this.busNumber = ''
+      this.capacity = ''
+      this.routeID = ''
+      this.driverID = ''
+      this.routeName = ''
+      this.driverName = ''
+    },
     fillTable() {
       axios
         .get(import.meta.env.VITE_API_BASE_URL + '/Route/getRoutes', {
@@ -226,8 +267,76 @@ export default {
           console.error(error)
         })
     },
+    async editBus(ID) {
+      this.editing = true
+      this.busID = ID
+      await axios
+        .get(import.meta.env.VITE_API_BASE_URL + '/Bus/' + ID, {
+          headers: {
+            Authorization: `Bearer ${this.$store.state.token}`
+          }
+        })
+        .then((response) => {
+          this.busNumber = response.data.busNumber
+          this.capacity = response.data.capacity
+          this.routeName = response.data.route.name
+          this.driverName = response.data.driver ? response.data.driver.user.name : ''
+          this.routeID = response.data.route.id
+          this.driverID = response.data.driver ? response.data.driver.id : ''
+        })
+    },
+    async pushEdits() {
+      if (
+        !this.busNumber ||
+        (!this.capacity && this.capacity !== 0) ||
+        !this.routeID ||
+        !this.driverID
+      ) {
+        console.error('Missing required Bus fields')
+        this.emptyAlert = true
+        this.successAlert = false
+        this.failAlert = false
+        return
+      } else {
+        this.emptyAlert = false
+      }
+      try {
+        const response = await axios.put(
+          import.meta.env.VITE_API_BASE_URL + '/Bus/' + this.busID,
+          this.busForm,
+          {
+            headers: {
+              Authorization: `Bearer ${this.$store.state.token}`,
+              'Content-Type': 'application/json'
+            }
+          }
+        )
+        if (response.status === 200) {
+          console.log(response.data)
+          this.resetForm()
+          this.fillTable()
+          this.editAlert = true
+          this.emptyAlert = false
+          this.failAlert = false
+          this.editing = false
+        }
+      } catch (error) {
+        console.error(error)
+        console.log('1', this.routeID, this.driverID)
+        if (error.response && error.response.status === 400) {
+          this.failAlert = true
+          this.emptyAlert = false
+          this.successAlert = false
+        }
+      }
+    },
     async addBus() {
-      if (!this.busNumber || !this.capacity) {
+      if (
+        !this.busNumber ||
+        (!this.capacity && this.capacity !== 0) ||
+        !this.routeID ||
+        !this.driverID
+      ) {
         console.error('Missing required Bus fields')
         this.emptyAlert = true
         this.successAlert = false
@@ -249,7 +358,6 @@ export default {
         if (response.status === 201) {
           console.log(response.data)
           this.successAlert = true
-          this.wrongAlert = false
           this.emptyAlert = false
           this.resetForm()
           this.fillTable()
@@ -257,7 +365,6 @@ export default {
       } catch (error) {
         console.error(error)
         if (error.response && error.response.status === 400) {
-          this.wrongAlert = true
           this.emptyAlert = false
           this.successAlert = false
         }

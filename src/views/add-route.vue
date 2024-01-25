@@ -34,6 +34,20 @@
           title="Route deleted successfully"
         ></v-alert>
       </div>
+      <div v-if="viewPathAlert" style="padding-bottom: 20px">
+        <v-alert
+          v-model="viewPathAlert"
+          border="start"
+          variant="tonal"
+          closable
+          close-label="Close Alert"
+          color="error"
+          title="Can't view route while adding a new one"
+        >
+          You are currently adding a route, you can view a route after you finish adding the current
+          one
+        </v-alert>
+      </div>
       <v-container>
         <v-row>
           <!-- <v-text-field label="Route Name" v-model="routeName" :maxlength="40" :counter="40" /> -->
@@ -75,8 +89,8 @@
             </thead>
             <tbody>
               <tr v-for="route in routes" :key="route.id">
-                <td class="text-center">{{ route.fee }}</td>
-                <td class="text-center">{{ route.name }}</td>
+                <td @click="displayRoute(route.id)" class="text-center">{{ route.fee }}</td>
+                <td @click="displayRoute(route.id)" class="text-center">{{ route.name }}</td>
                 <td class="text-center">
                   <v-btn
                     v-if="route.waypointsReturning === ''"
@@ -113,6 +127,12 @@
       <GMapPolyline :path="path" :options="{ strokeColor: '#0E33FF' }" />
       <GMapMarker v-for="(marker, index) in markers" :key="index" :position="marker" />
       <GMapMarker v-for="(marker, index) in stops" :key="index" :position="marker" />
+      <div v-if="this.markers.length === 0 && this.stops.length === 0">
+        <GMapPolyline :path="viewPath" :options="{ strokeColor: '#0E33FF' }" />
+        <GMapMarker v-for="(marker, index) in viewStops" :key="index" :position="marker" />
+        <GMapMarker :position="viewPath[0]" content="" />
+        <GMapMarker :position="viewPath[viewPath.length - 1]" />
+      </div>
     </GMapMap>
   </div>
 </template>
@@ -141,10 +161,13 @@ export default {
       addingStops: false,
       index: 1,
       stopsRoute: 0,
+      viewPath: [],
+      viewStops: [],
       successAlert: false,
       pointsAlert: false,
       goingAlert: true,
-      deleteAlert: false
+      deleteAlert: false,
+      viewPathAlert: false
     }
   },
   created() {
@@ -270,6 +293,43 @@ export default {
     clearInterval(this.intervalId)
   },
   methods: {
+    displayRoute(routeID) {
+      if (this.markers.length !== 0 || this.stops.length !== 0) {
+        this.viewPathAlert = true
+        return
+      }
+      axios
+        .get(import.meta.env.VITE_API_BASE_URL + '/Route/' + routeID, {
+          headers: {
+            Authorization: `Bearer ${this.$store.state.token}`
+          }
+        })
+        .then((response) => {
+          this.viewPath = decode(response.data.waypointsGoing, 5).map((coord) => ({
+            lat: coord[0],
+            lng: coord[1]
+          }))
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+
+      axios
+        .get(import.meta.env.VITE_API_BASE_URL + '/PredefinedStops/' + routeID, {
+          headers: {
+            Authorization: `Bearer ${this.$store.state.token}`
+          }
+        })
+        .then((response) => {
+          this.viewStops = response.data.points.map((coord) => ({
+            lat: coord.latitude,
+            lng: coord.longitude
+          }))
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    },
     returnRoute(routeID) {
       console.log('getting here')
       this.successAlert = false
@@ -340,7 +400,11 @@ export default {
       this.deleteAlert = false
     },
     deleteRoute(routeID) {
-      const confirmDelete = window.confirm('Are you sure you want to delete the route?')
+      this.displayRoute(routeID)
+      var confirmDelete
+      setTimeout(function () {
+        confirmDelete = window.confirm('Are you sure you want to delete the route?')
+      }, 200) //wait until the route is displayed
       if (confirmDelete) {
         axios
           .delete(import.meta.env.VITE_API_BASE_URL + '/Route/' + routeID, {
@@ -357,7 +421,7 @@ export default {
           })
         this.deleteAlert = true
         this.successAlert = false
-        this.pointsAlert =false
+        this.pointsAlert = false
       } else {
         console.log('canceled delete')
         return
