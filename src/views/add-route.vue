@@ -127,7 +127,7 @@
       <GMapPolyline :path="path" :options="{ strokeColor: '#0E33FF' }" />
       <GMapMarker v-for="(marker, index) in markers" :key="index" :position="marker" />
       <GMapMarker v-for="(marker, index) in stops" :key="index" :position="marker" />
-      <div v-if="this.markers.length === 0 && this.stops.length === 0">
+      <div v-if="this.markers.length === 0">
         <GMapPolyline :path="viewPath" :options="{ strokeColor: '#0E33FF' }" />
         <GMapMarker v-for="(marker, index) in viewStops" :key="index" :position="marker" />
         <GMapMarker :position="viewPath[0]" content="" />
@@ -402,37 +402,36 @@ export default {
     addRoutePoints(ID) {
       window.alert("You are adding stop points to the route, click 'Add Stops' to save them.")
       this.stopsRoute = ID
+      this.displayRoute(ID)
       this.addingStops = true
       this.successAlert = false
       this.deleteAlert = false
     },
-    deleteRoute(routeID) {
-      this.displayRoute(routeID)
+    async deleteRoute(routeID) {
+      await this.displayRoute(routeID)
       var confirmDelete
-      setTimeout(function () {
+      setTimeout(() => {
         confirmDelete = window.confirm('Are you sure you want to delete the route?')
+        if (confirmDelete) this.actualDelete(routeID)
       }, 200) //wait until the route is displayed
-      if (confirmDelete) {
-        axios
-          .delete(import.meta.env.VITE_API_BASE_URL + '/Route/' + routeID, {
-            headers: {
-              Authorization: `Bearer ${this.$store.state.token}`
-            }
-          })
-          .then((response) => {
-            console.log(response.status)
-            this.fillTable()
-          })
-          .catch((error) => {
-            console.error(error)
-          })
-        this.deleteAlert = true
-        this.successAlert = false
-        this.pointsAlert = false
-      } else {
-        console.log('canceled delete')
-        return
-      }
+    },
+    actualDelete(routeID) {
+      axios
+        .delete(import.meta.env.VITE_API_BASE_URL + '/Route/' + routeID, {
+          headers: {
+            Authorization: `Bearer ${this.$store.state.token}`
+          }
+        })
+        .then((response) => {
+          console.log(response.status)
+          this.fillTable()
+          this.deleteAlert = true
+          this.successAlert = false
+          this.pointsAlert = false
+        })
+        .catch((error) => {
+          console.error(error)
+        })
     },
     fillTable() {
       axios
@@ -466,6 +465,8 @@ export default {
       this.markers = []
       this.encodedPolyline = ''
       this.path = []
+      this.viewPath = []
+      this.viewStops = []
     },
     async makePolyline() {
       console.log(

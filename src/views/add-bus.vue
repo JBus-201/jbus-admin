@@ -48,6 +48,19 @@
         There was an issue performing this action
       </v-alert>
     </div>
+    <div v-if="driverAlert" style="padding-bottom: 50px">
+      <v-alert
+        v-model="driverAlert"
+        border="start"
+        variant="tonal"
+        closable
+        close-label="Close Alert"
+        color="error"
+        title="Bus not added"
+      >
+        The driver is already assigned to a bus
+      </v-alert>
+    </div>
     <v-form :style="anyAlert ? 'padding-top:0px' : 'padding-top: 50px'">
       <v-container>
         <v-row>
@@ -180,6 +193,7 @@ export default {
       emptyAlert: false,
       editAlert: false,
       failAlert: false,
+      driverAlert: false,
       busNumber: '',
       capacity: '',
       routes: [],
@@ -203,7 +217,7 @@ export default {
       }
     },
     anyAlert() {
-      return this.successAlert || this.emptyAlert || this.failAlert || this.editAlert
+      return this.successAlert || this.emptyAlert || this.failAlert || this.editAlert || this.driverAlert
     }
   },
   created() {
@@ -310,7 +324,7 @@ export default {
             }
           }
         )
-        if (response.status === 200) {
+        if (response.status === 204) {
           console.log(response.data)
           this.resetForm()
           this.fillTable()
@@ -338,6 +352,8 @@ export default {
         console.error('Missing required Bus fields')
         this.emptyAlert = true
         this.successAlert = false
+        this.failAlert = false
+        this.driverAlert = false
         return
       } else {
         this.emptyAlert = false
@@ -357,6 +373,8 @@ export default {
           console.log(response.data)
           this.successAlert = true
           this.emptyAlert = false
+          this.failAlert = false
+          this.driverAlert = false
           this.resetForm()
           this.fillTable()
         }
@@ -365,6 +383,7 @@ export default {
         if (error.response && error.response.status === 400) {
           this.emptyAlert = false
           this.successAlert = false
+          this.driverAlert = true
         }
       }
     }
