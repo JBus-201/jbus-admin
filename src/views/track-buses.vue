@@ -19,20 +19,33 @@
 </template>
 
 <script>
-import { location } from '@/firebase/init.js'
+import { ref, watch } from 'vue';
+import { location } from '@/firebase/init.js';
+
 export default {
   data() {
     return {
       markers: [],
       places: [],
       currentPlace: null,
-      viewPath: null
+      viewPath: { lat: 31.9351052, lng: 35.7755961 },
+      center: { lat: 31.9351052, lng: 35.7755961 }
     }
   },
   created() {
-    console.log("location from track-buses", location)
-    this.viewPath = { lat: 31.9351052, lng: 35.7755961 }
-    this.center = { lat: 31.9351052, lng: 35.7755961 }
+    const reactiveLocation = ref(location); // Make the location variable reactive
+
+    watch(reactiveLocation, (newLocation) => {
+      console.log("value changed");
+      this.viewPath = {
+        lat: newLocation.latitude,
+        lng: newLocation.longitude
+      };
+      this.center = {
+        lat: newLocation.latitude,
+        lng: newLocation.longitude
+      };
+    });
   }
 }
 </script>
