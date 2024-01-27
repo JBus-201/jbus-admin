@@ -130,7 +130,7 @@
       <div v-if="this.markers.length === 0">
         <GMapPolyline :path="viewPath" :options="{ strokeColor: '#0E33FF' }" />
         <GMapMarker v-for="(marker, index) in viewStops" :key="index" :position="marker" />
-        <GMapMarker :position="viewPath[0]" content="" />
+        <GMapMarker :position="viewPath[0]"/>
         <GMapMarker :position="viewPath[viewPath.length - 1]" />
       </div>
     </GMapMap>
