@@ -20,7 +20,7 @@
           closable
           close-label="Close Alert"
           color="success"
-          title="Points added successfully"
+          title="Stops added successfully"
         ></v-alert>
       </div>
       <div v-if="deleteAlert" style="padding-bottom: 20px">
@@ -428,10 +428,13 @@ export default {
           this.deleteAlert = true
           this.successAlert = false
           this.pointsAlert = false
+          this.viewPath= []
+          this.viewStops = []
         })
         .catch((error) => {
           console.error(error)
         })
+      
     },
     fillTable() {
       axios
