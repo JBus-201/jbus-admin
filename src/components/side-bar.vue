@@ -53,7 +53,7 @@
         :to="{ name: 'Manage Loyalty Points' }"
       >
       </v-list-item>
-      <!-- <v-list-item
+      <v-list-item
         prepend-icon="mdi-bell-cog"
         title="Manage Notifications"
         value="Manage Notifications"
@@ -64,7 +64,7 @@
         title="Generate Report"
         value="Generate Report"
         :to="{ name: 'Generate Report' }"
-      ></v-list-item> -->
+      ></v-list-item>
       <v-divider />
       <v-list-item
         prepend-icon="mdi-logout"

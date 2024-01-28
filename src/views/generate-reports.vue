@@ -1,5 +1,5 @@
 <template>
-  <div><h1>NOT IMPLEMENTED YET</h1></div>
+  <div style="display: flex; justify-content: center; align-items: center; height: 100vh;"><h1 >NOT IMPLEMENTED YET</h1></div>
 </template>
 
 <script>
