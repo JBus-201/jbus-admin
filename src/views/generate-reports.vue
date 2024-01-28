@@ -1,5 +1,5 @@
 <template>
-  <div></div>
+  <div><h1>NOT IMPLEMENTED YET</h1></div>
 </template>
 
 <script>
