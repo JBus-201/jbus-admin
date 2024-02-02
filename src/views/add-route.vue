@@ -384,7 +384,7 @@ export default {
         )
         console.log(response.status)
         this.fillTable()
-        // this.clearRoute()
+        this.clearRoute()
         this.pointsAlert = true
         this.stops = []
         // this.startingPointName = ''
@@ -457,7 +457,9 @@ export default {
       this.flag = true
     },
     popMarker() {
+      if(this.addingStops === false)
       this.markers.pop()
+      else this.stops.pop()
       this.flag = true
       if (this.markers.length <= 2) {
         this.encodedPolyline = ''

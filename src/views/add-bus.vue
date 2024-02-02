@@ -172,7 +172,7 @@
             <td class="text-left">
               {{ bus.driver ? bus.driver.user.name : 'No driver assigned' }}
             </td>
-            <td class="text-left">{{ bus.route.name }}</td>
+            <td class="text-left">{{ bus.route ? bus.route.name : 'No route assigned' }}</td>
             <td class="text-left">
               <v-btn @click="editBus(bus.id)" icon="mdi-pencil" style="margin: 6px"></v-btn>
             </td>
@@ -217,7 +217,9 @@ export default {
       }
     },
     anyAlert() {
-      return this.successAlert || this.emptyAlert || this.failAlert || this.editAlert || this.driverAlert
+      return (
+        this.successAlert || this.emptyAlert || this.failAlert || this.editAlert || this.driverAlert
+      )
     }
   },
   created() {
@@ -292,9 +294,9 @@ export default {
         .then((response) => {
           this.busNumber = response.data.busNumber
           this.capacity = response.data.capacity
-          this.routeName = response.data.route.name
+          this.routeName = response.data.route? response.data.route.name : ''
           this.driverName = response.data.driver ? response.data.driver.user.name : ''
-          this.routeID = response.data.route.id
+          this.routeID = response.data.route? response.data.route.id : ''
           this.driverID = response.data.driver ? response.data.driver.id : ''
         })
     },
@@ -308,6 +310,8 @@ export default {
         console.error('Missing required Bus fields')
         this.emptyAlert = true
         this.successAlert = false
+        this.driverAlert = false
+        this.editAlert = false
         this.failAlert = false
         return
       } else {
@@ -329,8 +333,10 @@ export default {
           this.resetForm()
           this.fillTable()
           this.editAlert = true
+          this.successAlert = false
           this.emptyAlert = false
           this.failAlert = false
+          this.driverAlert = false
           this.editing = false
         }
       } catch (error) {
@@ -339,6 +345,8 @@ export default {
           this.failAlert = true
           this.emptyAlert = false
           this.successAlert = false
+          this.driverAlert = false
+          this.editAlert = false
         }
       }
     },
@@ -354,6 +362,7 @@ export default {
         this.successAlert = false
         this.failAlert = false
         this.driverAlert = false
+        this.editAlert = false
         return
       } else {
         this.emptyAlert = false
@@ -372,6 +381,7 @@ export default {
         if (response.status === 201) {
           console.log(response.data)
           this.successAlert = true
+          this.editAlert = false
           this.emptyAlert = false
           this.failAlert = false
           this.driverAlert = false
@@ -381,9 +391,11 @@ export default {
       } catch (error) {
         console.error(error)
         if (error.response && error.response.status === 400) {
+          this.driverAlert = true
+          this.failAlert = false
           this.emptyAlert = false
           this.successAlert = false
-          this.driverAlert = true
+          this.editAlert = false
         }
       }
     }

@@ -54,10 +54,10 @@
       >
       </v-list-item>
       <v-list-item
-        prepend-icon="mdi-bell-cog"
-        title="Manage Notifications"
-        value="Manage Notifications"
-        :to="{ name: 'Manage Notifications' }"
+        prepend-icon="mdi-bell-plus"
+        title="Send Notifications"
+        value="Send Notifications"
+        :to="{ name: 'Send Notifications' }"
       ></v-list-item>
       <v-list-item
         prepend-icon="mdi-chart-line"

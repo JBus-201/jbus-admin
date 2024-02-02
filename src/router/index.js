@@ -136,9 +136,9 @@ const router = createRouter({
       }
     },
     {
-      name: 'Manage Notifications',
-      path: '/manage-notifications',
-      component: () => import('../views/manage-notifications.vue'),
+      name: 'Send Notifications',
+      path: '/send-notifications',
+      component: () => import('../views/send-notifications.vue'),
       beforeEnter: (to, from, next) => {
         const token = localStorage.getItem('token')
         if (!token) {

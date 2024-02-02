@@ -38,7 +38,7 @@
         The email or phone number you are using is not valid.
       </v-alert>
     </div>
-    <v-form>
+    <v-form style="padding-top: 50px">
       <v-container>
         <v-row>
           <v-col cols="10" md="10" align-self="center" offset="1">
