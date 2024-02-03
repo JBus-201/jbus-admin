@@ -49,7 +49,7 @@
         </v-alert>
       </div> -->
       <v-container>
-        <v-row style="padding-top: 20px">
+        <v-row style="padding-top: 40px">
           <v-table
             fixed-header
             hover
