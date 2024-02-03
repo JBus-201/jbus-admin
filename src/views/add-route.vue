@@ -248,13 +248,13 @@ export default {
         waypointsReturning: this.encodedPolylineComing,
         fee: parseInt(this.fee),
         startingPoint: {
-          name: 'starting point test',
+          name: this.startingPointName,
           logo: '/',
           latitude: this.startingPoint.lat,
           longitude: this.startingPoint.lng
         },
         endingPoint: {
-          name: 'ending point test',
+          name: this.endingPointName,
           logo: '/',
           latitude: this.endingPoint.lat,
           longitude: this.endingPoint.lng

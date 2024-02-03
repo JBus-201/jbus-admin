@@ -136,6 +136,19 @@ const router = createRouter({
       }
     },
     {
+      name: 'Generate Scratch Cards',
+      path: '/generate-scratch-cards',
+      component: () => import('../views/generate-scratch-cards.vue'),
+      beforeEnter: (to, from, next) => {
+        const token = localStorage.getItem('token')
+        if (!token) {
+          next('/') // redirect to login if there's no token
+        } else {
+          next() // proceed to /add-passenger
+        }
+      }
+    },
+    {
       name: 'Send Notifications',
       path: '/send-notifications',
       component: () => import('../views/send-notifications.vue'),

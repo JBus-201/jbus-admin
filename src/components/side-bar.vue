@@ -54,6 +54,12 @@
       >
       </v-list-item>
       <v-list-item
+        prepend-icon="mdi-cards"
+        title="Generate Scratch Cards"
+        value="Generate Scratch Cards"
+        :to="{ name: 'Generate Scratch Cards' }"
+      ></v-list-item>
+      <v-list-item
         prepend-icon="mdi-bell-plus"
         title="Send Notifications"
         value="Send Notifications"

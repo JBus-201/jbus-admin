@@ -11,6 +11,17 @@
         title="Points added successfully"
       ></v-alert>
     </div>
+    <div v-if="emptyAlert" style="padding-bottom: 50px">
+      <v-alert
+        v-model="emptyAlert"
+        border="start"
+        variant="tonal"
+        closable
+        close-label="Close Alert"
+        color="error"
+        title="Please fill the points field"
+      ></v-alert>
+    </div>
     <div v-if="errorAlert" style="padding-bottom: 50px">
       <v-alert
         v-model="errorAlert"
@@ -92,6 +103,7 @@ export default {
     return {
       successAlert: false,
       errorAlert: false,
+      emptyAlert: false,
       points: null,
       passengers: [],
       specificPassengerID: null
@@ -99,7 +111,7 @@ export default {
   },
   computed: {
     anyAlert() {
-      return this.successAlert || this.errorAlert
+      return this.successAlert || this.errorAlert || this.emptyAlert
     }
   },
   created() {
@@ -159,9 +171,14 @@ export default {
             this.fillTable()
           })
           .catch((error) => {
-            console.error(error)
-            this.successAlert = false
-            this.errorAlert = true
+            if(error.response.status === 400) {
+              this.emptyAlert = true
+              this.successAlert = false
+              this.errorAlert = false
+              // this.successAlert = false
+              // this.errorAlert = true
+              console.error(error)
+            }
           })
       }
     },
