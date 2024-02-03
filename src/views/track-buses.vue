@@ -113,7 +113,7 @@ export default {
   },
   created() {
     axios
-      .get(import.meta.env.VITE_API_BASE_URL + '/Bus/getBuses', {
+      .get(import.meta.env.VITE_API_BASE_URL + '/Bus/getActiveBuses', {
         headers: {
           Authorization: `Bearer ${this.$store.state.token}`
         }
