@@ -56,7 +56,6 @@ npm run test:e2e
 npm run lint
 ```
 
-<img width="1792" alt="Screenshot 2024-02-04 at 2 12 20 AM" src="https://github.com/JBus-201/jbus-admin/assets/77539774/26766e1e-3ac3-428d-9be5-086541ccd735">
 <img width="1792" alt="Screenshot 2024-02-04 at 2 11 39 AM" src="https://github.com/JBus-201/jbus-admin/assets/77539774/aadd023e-d0a0-457d-afee-ae2e357ca109">
 <img width="1792" alt="Screenshot 2024-02-04 at 2 31 02 AM" src="https://github.com/JBus-201/jbus-admin/assets/77539774/871a43ac-d4a4-46c0-b418-99dfcac23609">
 <img width="1792" alt="Screenshot 2024-02-04 at 2 11 46 AM" src="https://github.com/JBus-201/jbus-admin/assets/77539774/da4ce6ab-a585-4965-bac6-039b134f6b63">
